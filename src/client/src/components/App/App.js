@@ -17,5 +17,5 @@ export default () => {
 
   checkTestRequestResult();
 
-  return <div className="App">Test App</div>;
+  return <div className="App">Red Tetris</div>;
 };
