@@ -1,3 +1,22 @@
-.App {
-  text-align: center;
+.app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.me {
+  position: relative;
+  width: 500px;
+  height: 1000px;
+  outline: 1px solid grey;
+  margin-right: 5vw;
+}
+
+.you {
+  position: relative;
+  width: 500px;
+  height: 1000px;
+  outline: 1px solid grey;
 }

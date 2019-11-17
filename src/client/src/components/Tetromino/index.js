@@ -1,0 +1,1 @@
+export { Tetromino } from "./Tetromino";
