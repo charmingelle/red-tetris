@@ -20,6 +20,6 @@ const InnerPile = props => {
   );
 };
 
-const mapStateToProps = ({ pile }) => ({ pile });
+const mapStateToProps = ({ game: { pile } }) => ({ pile });
 
 export const Pile = connect(mapStateToProps)(InnerPile);

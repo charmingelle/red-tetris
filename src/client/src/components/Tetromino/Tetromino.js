@@ -5,16 +5,16 @@ import { connect } from "react-redux";
 export const TetrominoInner = ({ coords, left, top }) => (
   <>
     {coords.map(({ row, col }) => (
-      <Square left={col + left} top={row + top} key={`${row}+${col}`} />
+      <Square left={col} top={row} key={`${row}+${col}`} />
     ))}
   </>
 );
 
-const mapStateToProps = ({ tetromino: { coords, left, top } }) => ({
-  coords,
-  left,
-  top
-});
+const mapStateToProps = ({
+  game: {
+    tetromino: { coords }
+  }
+}) => ({ coords });
 
 const mapDispatchToProps = null;
 

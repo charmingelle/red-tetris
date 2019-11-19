@@ -1,8 +1,4 @@
 import { combineReducers } from "redux";
-import { tetromino } from "./tetromino";
-import { pile } from "./pile";
+import { game } from "./game";
 
-export const allReducers = combineReducers({
-  tetromino,
-  pile
-});
+export const allReducers = combineReducers({ game });
