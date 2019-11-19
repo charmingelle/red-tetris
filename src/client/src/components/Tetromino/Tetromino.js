@@ -2,7 +2,7 @@ import React from "react";
 import { Square } from "../Square";
 import { connect } from "react-redux";
 
-export const TetrominoInner = ({ coords, left, top }) => (
+export const TetrominoInner = ({ coords }) => (
   <>
     {coords.map(({ row, col }) => (
       <Square left={col} top={row} key={`${row}+${col}`} />

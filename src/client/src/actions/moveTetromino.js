@@ -1,6 +1,6 @@
 import { MOVE_TETRIMINO } from "../constants";
 
-export const moveTetrimino = ({ left, top }) => ({
+export const moveTetromino = ({ left, top }) => ({
   type: MOVE_TETRIMINO,
   payload: { left, top }
 });
