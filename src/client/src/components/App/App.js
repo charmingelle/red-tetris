@@ -3,8 +3,9 @@ import "./App.css";
 import socketIOClient from "socket.io-client";
 import { Tetromino } from "../Tetromino";
 import { moveTetromino } from "../../actions/moveTetromino";
-import { connect } from "react-redux";
-import { LEFT, RIGHT, DOWN } from "../../constants";
+import { dropTetromino } from "../../actions/dropTetromino";
+import { rotateTetromino } from "../../actions/rotateTetromino";
+import { LEFT, RIGHT, DOWN, UP } from "../../constants";
 import { Pile } from "../Pile";
 import { store } from "../../index";
 
@@ -24,8 +25,12 @@ const keyDownHandler = ({ key }) => {
       store.dispatch(moveTetromino({ left: 1, top: 0 }));
       break;
     }
+    case UP: {
+      store.dispatch(rotateTetromino());
+      break;
+    }
     case DOWN: {
-      store.dispatch(moveTetromino({ left: 0, top: 1 }));
+      store.dispatch(dropTetromino());
       break;
     }
     default: {
@@ -36,7 +41,7 @@ const keyDownHandler = ({ key }) => {
 
 window.setInterval(
   () => store.dispatch(moveTetromino({ left: 0, top: 1 })),
-  1000
+  750
 );
 
 window.addEventListener("keydown", keyDownHandler);
