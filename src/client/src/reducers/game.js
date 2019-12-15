@@ -1,8 +1,8 @@
 import {
-  FILL_PILE,
-  MOVE_TETRIMINO,
-  DROP_TETROMINO,
-  ROTATE_TETRIMINO,
+  MOVE_TETRO,
+  MOVE_TETRO_DOWN,
+  DROP_TETRO,
+  ROTATE_TETR0,
   RIGHT_LIMIT,
   BOTTOM_LIMIT,
   LINE,
@@ -11,41 +11,10 @@ import {
   SQUARE,
   ZI,
   ZI2,
-  TI,
-  LINE_TETRO
+  TI
 } from "../constants";
 
-const getNewCoords = (coords, payloadTop, payloadLeft) =>
-  coords.map(({ row, col }) => ({
-    row: row + payloadTop,
-    col: col + payloadLeft
-  }));
-
-const wasPileHit = (coords, pile) =>
-  coords.some(
-    ({ row, col }) => row >= BOTTOM_LIMIT || typeof pile[row][col] === "string"
-  );
-
-const areCoordsInField = coords =>
-  coords.every(
-    ({ row, col }) =>
-      row >= 0 && row < BOTTOM_LIMIT && col >= 0 && col < RIGHT_LIMIT
-  );
-
-const isGameOver = coords => coords.some(({ row }) => row === 0);
-
-const getFilledRows = pile => {
-  const rows = [];
-
-  pile.forEach((row, index) => {
-    if (row.every(el => typeof el === "string")) {
-      rows.push(index);
-    }
-  });
-  return rows;
-};
-
-const getRandomFigure = () => {
+const getRandomTetro = () => {
   const figures = [LINE, GI, GI2, SQUARE, ZI, ZI2, TI];
   const colors = [
     "red",
@@ -60,34 +29,120 @@ const getRandomFigure = () => {
   const randomColorIndex = Math.floor(Math.random() * colors.length);
 
   return {
-    coords: figures[randomFigureIndex],
+    figure: figures[randomFigureIndex],
+    row: 0,
+    col: 4,
     color: colors[randomColorIndex]
   };
 };
 
-const getBottomCoords = (coords, pile) => {
-  let prevCoords = coords;
+const wasPileHit = (figure, row, col, pile) => {
+  const lastRow = BOTTOM_LIMIT - 1;
 
-  for (let top = 0; top < 20; top++) {
-    const newCoords = getNewCoords(coords, top, 0);
-
-    if (wasPileHit(newCoords, pile)) {
-      return prevCoords;
+  for (let rowIndex = 0; rowIndex < figure.length; rowIndex++) {
+    for (let colIndex = 0; colIndex < figure[rowIndex].length; colIndex++) {
+      if (figure[rowIndex][colIndex] !== 0 && row + rowIndex > lastRow) {
+        return true;
+      }
+      if (
+        figure[rowIndex][colIndex] !== 0 &&
+        pile[rowIndex + row][colIndex + col] !== 0
+      ) {
+        return true;
+      }
     }
-    prevCoords = newCoords;
   }
-  return coords;
+  return false;
 };
 
-const getRotatedCoords = coords =>
-  coords.map(({ row, col }) => {
-    const temp = row;
+const isTetroInsideField = (figure, row, col) => {
+  for (let rowIndex = 0; rowIndex < figure.length; rowIndex++) {
+    for (let colIndex = 0; colIndex < figure[rowIndex].length; colIndex++) {
+      const elRow = rowIndex + row;
+      const elCol = colIndex + col;
 
-    return {
-      row: col,
-      col: temp
-    };
-  });
+      if (
+        figure[rowIndex][colIndex] !== 0 &&
+        (elRow < 0 ||
+          elRow >= BOTTOM_LIMIT ||
+          elCol < 0 ||
+          elCol >= RIGHT_LIMIT)
+      ) {
+        return false;
+      }
+    }
+  }
+  return true;
+};
+
+const transposeMatrix = figure => {
+  const figureSize = figure.length;
+  let temp;
+
+  for (let i = 0; i < figureSize; i++) {
+    for (let j = i; j < figureSize; j++) {
+      temp = figure[i][j];
+      figure[i][j] = figure[j][i];
+      figure[j][i] = temp;
+    }
+  }
+};
+
+const reverseColumns = figure => {
+  const figureSize = figure.length;
+  let temp;
+
+  for (let i = 0; i < figureSize; i++) {
+    for (let j = 0, k = figureSize - 1; j < k; j++, k--) {
+      temp = figure[j][i];
+      figure[j][i] = figure[k][i];
+      figure[k][i] = temp;
+    }
+  }
+};
+
+const getRotatedFigure = figure => {
+  const rotatedFigure = JSON.parse(JSON.stringify(figure));
+
+  transposeMatrix(rotatedFigure);
+  reverseColumns(rotatedFigure);
+  return rotatedFigure;
+};
+
+const isGameOver = pile => pile[0].some(el => el !== 0);
+
+const getPileWithRemovedRows = pile => {
+  const newPile = JSON.parse(JSON.stringify(pile));
+
+  for (let rowIndex = BOTTOM_LIMIT - 1; rowIndex >= 0; rowIndex--) {
+    if (newPile[rowIndex].every(el => el !== 0)) {
+      newPile.splice(rowIndex, 1);
+      newPile.unshift(new Array(10).fill(0));
+      rowIndex++;
+    }
+  }
+  return newPile;
+};
+
+const getPileWithDropedTetro = (tetro, pile) => {
+  const { figure, col, color } = tetro;
+
+  for (let rowIndex = 0; rowIndex < BOTTOM_LIMIT; rowIndex++) {
+    if (wasPileHit(figure, rowIndex, col, pile)) {
+      const newPile = JSON.parse(JSON.stringify(pile));
+
+      figure.forEach((figureFow, figureRowIndex) =>
+        figureFow.forEach((_el, colIndex) => {
+          if (figure[figureRowIndex][colIndex] !== 0) {
+            newPile[figureRowIndex + rowIndex - 1][colIndex + col] = color;
+          }
+        })
+      );
+      return newPile;
+    }
+  }
+  return pile;
+};
 
 const initialState = {
   pile: [
@@ -112,72 +167,98 @@ const initialState = {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   ],
-  tetromino: getRandomFigure()
+  tetro: getRandomTetro()
+};
+
+const getPileWithTetro = (pile, tetro) => {
+  const { figure, row, col, color } = tetro;
+  const newPile = JSON.parse(JSON.stringify(pile));
+
+  figure.forEach((figureFow, rowIndex) =>
+    figureFow.forEach((_el, colIndex) => {
+      if (figure[rowIndex][colIndex] !== 0) {
+        newPile[rowIndex + row][colIndex + col] = color;
+      }
+    })
+  );
+  return newPile;
 };
 
 export const game = (state = initialState, action) => {
-  switch (action.type) {
-    case FILL_PILE: {
-      const newPile = JSON.parse(JSON.stringify(state.pile));
+  const {
+    tetro: { figure, row, col, color },
+    pile
+  } = state;
 
-      action.payload.coords.forEach(({ row, col }) => (newPile[row][col] = 1));
+  if (isGameOver(pile)) {
+    return initialState;
+  }
+
+  switch (action.type) {
+    case MOVE_TETRO: {
+      const newRow = row + action.payload.top;
+      const newCol = col + action.payload.left;
+
+      if (!isTetroInsideField(figure, newRow, newCol)) {
+        return state;
+      }
+      if (wasPileHit(figure, newRow, newCol, pile)) {
+        return state;
+      }
       return {
         ...state,
-        pile: newPile
+        tetro: {
+          figure,
+          row: newRow,
+          col: newCol,
+          color
+        }
       };
     }
-    case MOVE_TETRIMINO: {
-      const newCoords = getNewCoords(
-        state.tetromino.coords,
-        action.payload.top,
-        action.payload.left
-      );
+    case DROP_TETRO: {
+      return {
+        ...state,
+        pile: getPileWithRemovedRows(getPileWithDropedTetro(state.tetro, pile)),
+        tetro: getRandomTetro()
+      };
+    }
+    case ROTATE_TETR0: {
+      const rotatedFigure = getRotatedFigure(figure);
 
-      if (wasPileHit(newCoords, state.pile)) {
-        const newPile = JSON.parse(JSON.stringify(state.pile));
-
-        state.tetromino.coords.forEach(
-          ({ row, col }) => (newPile[row][col] = state.tetromino.color)
-        );
-        if (isGameOver(state.tetromino.coords)) {
-          return initialState;
+      if (!isTetroInsideField(rotatedFigure, row, col)) {
+        return state;
+      }
+      if (wasPileHit(rotatedFigure, row, col, pile)) {
+        return state;
+      }
+      return {
+        ...state,
+        tetro: {
+          ...state.tetro,
+          figure: rotatedFigure
         }
-        const filledRows = getFilledRows(newPile);
+      };
+    }
+    case MOVE_TETRO_DOWN: {
+      const newRow = row + 1;
 
-        if (filledRows.length) {
-          filledRows.forEach(row => newPile.splice(row, 1));
-          newPile.unshift(new Array(10).fill(0));
-        }
+      if (wasPileHit(figure, newRow, col, pile)) {
         return {
           ...state,
-          pile: newPile,
-          tetromino: getRandomFigure()
+          pile: getPileWithRemovedRows(getPileWithTetro(pile, state.tetro)),
+          tetro: getRandomTetro()
         };
-      } else if (areCoordsInField(newCoords)) {
+      } else {
         return {
           ...state,
-          tetromino: { coords: newCoords, color: state.tetromino.color }
+          tetro: {
+            figure,
+            row: newRow,
+            col,
+            color
+          }
         };
       }
-      return state;
-    }
-    case DROP_TETROMINO: {
-      return {
-        ...state,
-        tetromino: {
-          coords: getBottomCoords(state.tetromino.coords, state.pile),
-          color: state.tetromino.color
-        }
-      };
-    }
-    case ROTATE_TETRIMINO: {
-      return {
-        ...state,
-        tetromino: {
-          coords: getRotatedCoords(state.tetromino.coords),
-          color: state.tetromino.color
-        }
-      };
     }
     default: {
       return state;

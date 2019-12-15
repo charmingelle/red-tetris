@@ -2,9 +2,10 @@ import React from "react";
 import "./App.css";
 import socketIOClient from "socket.io-client";
 import { Tetromino } from "../Tetromino";
-import { moveTetromino } from "../../actions/moveTetromino";
-import { dropTetromino } from "../../actions/dropTetromino";
-import { rotateTetromino } from "../../actions/rotateTetromino";
+import { moveTetro } from "../../actions/moveTetro";
+import { moveTetroDown } from "../../actions/moveTetroDown";
+import { dropTetro } from "../../actions/dropTetro";
+import { rotateTetro } from "../../actions/rotateTetro";
 import { LEFT, RIGHT, DOWN, UP } from "../../constants";
 import { Pile } from "../Pile";
 import { store } from "../../index";
@@ -18,19 +19,19 @@ const checkTestRequestResult = () =>
 const keyDownHandler = ({ key }) => {
   switch (key) {
     case LEFT: {
-      store.dispatch(moveTetromino({ left: -1, top: 0 }));
+      store.dispatch(moveTetro({ left: -1, top: 0 }));
       break;
     }
     case RIGHT: {
-      store.dispatch(moveTetromino({ left: 1, top: 0 }));
+      store.dispatch(moveTetro({ left: 1, top: 0 }));
       break;
     }
     case UP: {
-      store.dispatch(rotateTetromino());
+      store.dispatch(rotateTetro());
       break;
     }
     case DOWN: {
-      store.dispatch(dropTetromino());
+      store.dispatch(dropTetro());
       break;
     }
     default: {
@@ -39,10 +40,7 @@ const keyDownHandler = ({ key }) => {
   }
 };
 
-window.setInterval(
-  () => store.dispatch(moveTetromino({ left: 0, top: 1 })),
-  750
-);
+window.setInterval(() => store.dispatch(moveTetroDown()), 750);
 
 window.addEventListener("keydown", keyDownHandler);
 

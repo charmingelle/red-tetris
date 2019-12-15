@@ -2,19 +2,31 @@ import React from "react";
 import { Square } from "../Square";
 import { connect } from "react-redux";
 
-export const TetrominoInner = ({ coords, color }) => (
-  <>
-    {coords.map(({ row, col }) => (
-      <Square left={col} top={row} color={color} key={`${row}+${col}`} />
-    ))}
-  </>
-);
+export const TetrominoInner = ({ figure, row, col, color }) => {
+  const squares = [];
+
+  figure.map((figureRow, figureRowIndex) =>
+    figureRow.forEach((figureEl, figureColIndex) => {
+      if (figureEl !== 0) {
+        squares.push(
+          <Square
+            left={figureColIndex + col}
+            top={figureRowIndex + row}
+            color={color}
+            key={`${figureRowIndex}-${figureColIndex}`}
+          />
+        );
+      }
+    })
+  );
+  return <>{squares}</>;
+};
 
 const mapStateToProps = ({
   game: {
-    tetromino: { coords, color }
+    tetro: { figure, row, col, color }
   }
-}) => ({ coords, color });
+}) => ({ figure, row, col, color });
 
 const mapDispatchToProps = null;
 
