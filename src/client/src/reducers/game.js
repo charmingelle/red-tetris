@@ -1,4 +1,5 @@
 import {
+  SET_TETRO,
   MOVE_TETRO,
   MOVE_TETRO_DOWN,
   DROP_TETRO,
@@ -11,19 +12,19 @@ import {
   SQUARE,
   ZI,
   ZI2,
-  TI
-} from "../constants";
+  TI,
+} from '../constants';
 
 const getRandomTetro = () => {
   const figures = [LINE, GI, GI2, SQUARE, ZI, ZI2, TI];
   const colors = [
-    "red",
-    "orange",
-    "yellow",
-    "green",
-    "blue",
-    "purple",
-    "violet"
+    'red',
+    'orange',
+    'yellow',
+    'green',
+    'blue',
+    'purple',
+    'violet',
   ];
   const randomFigureIndex = Math.floor(Math.random() * figures.length);
   const randomColorIndex = Math.floor(Math.random() * colors.length);
@@ -32,7 +33,7 @@ const getRandomTetro = () => {
     figure: figures[randomFigureIndex],
     row: 0,
     col: 4,
-    color: colors[randomColorIndex]
+    color: colors[randomColorIndex],
   };
 };
 
@@ -136,7 +137,7 @@ const getPileWithDropedTetro = (tetro, pile) => {
           if (figure[figureRowIndex][colIndex] !== 0) {
             newPile[figureRowIndex + rowIndex - 1][colIndex + col] = color;
           }
-        })
+        }),
       );
       return newPile;
     }
@@ -165,9 +166,9 @@ const initialState = {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ],
-  tetro: getRandomTetro()
+  tetro: null,
 };
 
 const getPileWithTetro = (pile, tetro) => {
@@ -179,89 +180,106 @@ const getPileWithTetro = (pile, tetro) => {
       if (figure[rowIndex][colIndex] !== 0) {
         newPile[rowIndex + row][colIndex + col] = color;
       }
-    })
+    }),
   );
   return newPile;
 };
 
 export const game = (state = initialState, action) => {
-  const {
-    tetro: { figure, row, col, color },
-    pile
-  } = state;
-
-  if (isGameOver(pile)) {
-    return initialState;
+  if (action.type === SET_TETRO) {
+    return {
+      ...state,
+      tetro: action.payload,
+    };
   }
+  if (state.tetro) {
+    const {
+      tetro: { figure, row, col, color },
+      pile,
+    } = state;
 
-  switch (action.type) {
-    case MOVE_TETRO: {
-      const newRow = row + action.payload.top;
-      const newCol = col + action.payload.left;
-
-      if (!isTetroInsideField(figure, newRow, newCol)) {
-        return state;
-      }
-      if (wasPileHit(figure, newRow, newCol, pile)) {
-        return state;
-      }
-      return {
-        ...state,
-        tetro: {
-          figure,
-          row: newRow,
-          col: newCol,
-          color
-        }
-      };
+    if (isGameOver(pile)) {
+      return initialState;
     }
-    case DROP_TETRO: {
-      return {
-        ...state,
-        pile: getPileWithRemovedRows(getPileWithDropedTetro(state.tetro, pile)),
-        tetro: getRandomTetro()
-      };
-    }
-    case ROTATE_TETR0: {
-      const rotatedFigure = getRotatedFigure(figure);
 
-      if (!isTetroInsideField(rotatedFigure, row, col)) {
-        return state;
-      }
-      if (wasPileHit(rotatedFigure, row, col, pile)) {
-        return state;
-      }
-      return {
-        ...state,
-        tetro: {
-          ...state.tetro,
-          figure: rotatedFigure
-        }
-      };
-    }
-    case MOVE_TETRO_DOWN: {
-      const newRow = row + 1;
-
-      if (wasPileHit(figure, newRow, col, pile)) {
+    switch (action.type) {
+      case SET_TETRO: {
         return {
           ...state,
-          pile: getPileWithRemovedRows(getPileWithTetro(pile, state.tetro)),
-          tetro: getRandomTetro()
+          tetro: action.payload,
         };
-      } else {
+      }
+      case MOVE_TETRO: {
+        const newRow = row + action.payload.top;
+        const newCol = col + action.payload.left;
+
+        if (!isTetroInsideField(figure, newRow, newCol)) {
+          return state;
+        }
+        if (wasPileHit(figure, newRow, newCol, pile)) {
+          return state;
+        }
         return {
           ...state,
           tetro: {
             figure,
             row: newRow,
-            col,
-            color
-          }
+            col: newCol,
+            color,
+          },
         };
       }
-    }
-    default: {
-      return state;
+      case DROP_TETRO: {
+        return {
+          ...state,
+          pile: getPileWithRemovedRows(
+            getPileWithDropedTetro(state.tetro, pile),
+          ),
+          tetro: getRandomTetro(),
+        };
+      }
+      case ROTATE_TETR0: {
+        const rotatedFigure = getRotatedFigure(figure);
+
+        if (!isTetroInsideField(rotatedFigure, row, col)) {
+          return state;
+        }
+        if (wasPileHit(rotatedFigure, row, col, pile)) {
+          return state;
+        }
+        return {
+          ...state,
+          tetro: {
+            ...state.tetro,
+            figure: rotatedFigure,
+          },
+        };
+      }
+      case MOVE_TETRO_DOWN: {
+        const newRow = row + 1;
+
+        if (wasPileHit(figure, newRow, col, pile)) {
+          return {
+            ...state,
+            pile: getPileWithRemovedRows(getPileWithTetro(pile, state.tetro)),
+            tetro: getRandomTetro(),
+          };
+        } else {
+          return {
+            ...state,
+            tetro: {
+              figure,
+              row: newRow,
+              col,
+              color,
+            },
+          };
+        }
+      }
+      default: {
+        return state;
+      }
     }
   }
+  return state;
 };

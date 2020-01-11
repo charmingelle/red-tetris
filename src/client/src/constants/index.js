@@ -3,8 +3,11 @@ export const RIGHT = 'ArrowRight';
 export const DOWN = 'ArrowDown';
 export const UP = 'ArrowUp';
 
+export const UPDATE_MY_DATA = 'UPDATE_MY_DATA';
 export const CHANGE_SHOW_LOBBY = 'CHANGE_SHOW_LOBBY';
 export const LOAD_ROOMS = 'LOAD_ROOMS';
+export const LOAD_ROOM = 'LOAD_ROOM';
+export const SET_TETRO = 'SET_TETRO';
 export const MOVE_TETRO = 'MOVE_TETRO';
 export const MOVE_TETRO_DOWN = 'MOVE_TETRO_DOWN';
 export const DROP_TETRO = 'DROP_TETRO';
@@ -15,16 +18,44 @@ export const BOTTOM_LIMIT = 20;
 
 export const SHIFT = 50;
 
-export const LINE = [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0]];
+export const LINE = [
+  [0, 0, 1, 0],
+  [0, 0, 1, 0],
+  [0, 0, 1, 0],
+  [0, 0, 1, 0],
+];
 
-export const GI = [[1, 1, 1], [0, 0, 1], [0, 0, 0]];
+export const GI = [
+  [1, 1, 1],
+  [0, 0, 1],
+  [0, 0, 0],
+];
 
-export const GI2 = [[1, 1, 1], [1, 0, 0], [0, 0, 0]];
+export const GI2 = [
+  [1, 1, 1],
+  [1, 0, 0],
+  [0, 0, 0],
+];
 
-export const SQUARE = [[1, 1], [1, 1]];
+export const SQUARE = [
+  [1, 1],
+  [1, 1],
+];
 
-export const ZI = [[1, 1, 0], [0, 1, 1], [0, 0, 0]];
+export const ZI = [
+  [1, 1, 0],
+  [0, 1, 1],
+  [0, 0, 0],
+];
 
-export const ZI2 = [[0, 1, 1], [1, 1, 0], [0, 0, 0]];
+export const ZI2 = [
+  [0, 1, 1],
+  [1, 1, 0],
+  [0, 0, 0],
+];
 
-export const TI = [[1, 1, 1], [0, 1, 0], [0, 0, 0]];
+export const TI = [
+  [1, 1, 1],
+  [0, 1, 0],
+  [0, 0, 0],
+];
