@@ -1,6 +1,6 @@
-import React from "react";
-import { Square } from "../Square";
-import { connect } from "react-redux";
+import React from 'react';
+import { Square } from '../Square';
+import { connect } from 'react-redux';
 
 export const TetrominoInner = ({ figure, row, col, color }) => {
   const squares = [];
@@ -14,23 +14,18 @@ export const TetrominoInner = ({ figure, row, col, color }) => {
             top={figureRowIndex + row}
             color={color}
             key={`${figureRowIndex}-${figureColIndex}`}
-          />
+          />,
         );
       }
-    })
+    }),
   );
   return <>{squares}</>;
 };
 
 const mapStateToProps = ({
   game: {
-    tetro: { figure, row, col, color }
-  }
+    tetro: { figure, row, col, color },
+  },
 }) => ({ figure, row, col, color });
 
-const mapDispatchToProps = null;
-
-export const Tetromino = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TetrominoInner);
+export const Tetromino = connect(mapStateToProps)(TetrominoInner);
