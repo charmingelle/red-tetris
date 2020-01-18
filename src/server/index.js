@@ -78,6 +78,7 @@ class Player {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
+    this.tetroIndex = -1;
     this.tetro = null;
     this.game = null;
   }
@@ -87,7 +88,8 @@ class Player {
   }
 
   setTetro() {
-    this.tetro = this.game.tetro;
+    this.tetroIndex += 1;
+    this.tetro = this.game.getTetro(this.tetroIndex);
     io.to(this.id).emit('set-tetro', { tetro: this.tetro });
   }
 
@@ -103,7 +105,7 @@ class Player {
 class Game {
   constructor(players) {
     this.players = players;
-    this.tetro = this.getRandomTetro();
+    this.tetros = [this.getRandomTetro()];
 
     this.players.forEach(player => {
       player.setGame(this);
@@ -111,7 +113,13 @@ class Game {
     });
   }
 
-  setTetro() {}
+  getTetro(tetroIndex) {
+    if (this.tetros[tetroIndex]) {
+      return this.tetros[tetroIndex];
+    }
+    this.tetros = [...this.tetros, this.getRandomTetro()];
+    return this.tetros[tetroIndex];
+  }
 
   getRandomTetro() {
     const figures = [LINE, GI, GI2, SQUARE, ZI, ZI2, TI];
@@ -130,7 +138,7 @@ class Game {
   getGameData() {
     return {
       players: this.players.map(player => player.getPlayerData()),
-      tetro: this.tetro,
+      tetro: this.tetros[this.tetros.length - 1],
     };
   }
 }
