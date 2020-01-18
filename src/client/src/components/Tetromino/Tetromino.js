@@ -1,6 +1,7 @@
 import React from 'react';
 import { Square } from '../Square';
 import { connect } from 'react-redux';
+import { SHIFT } from '../../constants';
 
 export const TetrominoInner = ({ tetro }) => {
   if (tetro) {
@@ -16,6 +17,7 @@ export const TetrominoInner = ({ tetro }) => {
               top={figureRowIndex + row}
               color={color}
               key={`${figureRowIndex}-${figureColIndex}`}
+              shift={SHIFT}
             />,
           );
         }

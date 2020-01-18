@@ -93,6 +93,10 @@ class Player {
     io.to(this.id).emit('set-tetro', { tetro: this.tetro });
   }
 
+  setPile(pile) {
+    this.pile = pile;
+  }
+
   getPlayerData() {
     return {
       id: this.id,
@@ -103,7 +107,8 @@ class Player {
 }
 
 class Game {
-  constructor(players) {
+  constructor(room, players) {
+    this.room = room;
     this.players = players;
     this.tetros = [this.getRandomTetro()];
 
@@ -157,7 +162,7 @@ class Room {
   }
 
   startGame() {
-    this.game = new Game(this.players);
+    this.game = new Game(this, this.players);
   }
 
   endGame() {
@@ -245,6 +250,23 @@ io.on('connection', socket => {
 
       if (player) {
         player.setTetro();
+      }
+    }
+  });
+
+  socket.on('set-pile', ({ roomId, playerId, pile }) => {
+    const room = rooms[roomId];
+
+    if (room) {
+      const player = room.players.find(player => player.id === playerId);
+
+      if (player) {
+        player.setPile(pile);
+        socket.broadcast.emit('set-other-pile', {
+          roomId,
+          playerId,
+          pile,
+        });
       }
     }
   });

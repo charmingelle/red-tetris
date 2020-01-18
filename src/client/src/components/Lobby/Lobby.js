@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import './Lobby.css';
-import { changeShowLobby } from '../../actions/changeShowLobby';
+import { changeShowLobby } from '../../actions';
 
 let newRoomName = null;
 

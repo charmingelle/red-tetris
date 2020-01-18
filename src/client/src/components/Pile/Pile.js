@@ -1,6 +1,7 @@
-import React from "react";
-import { connect } from "react-redux";
-import { Square } from "../Square";
+import React from 'react';
+import { connect } from 'react-redux';
+import { Square } from '../Square';
+import { SHIFT } from '../../constants';
 
 const InnerPile = props => (
   <>
@@ -12,9 +13,10 @@ const InnerPile = props => (
             top={rowIndex}
             color={el}
             key={`${rowIndex}+${colIndex}`}
+            shift={SHIFT}
           />
-        ) : null
-      )
+        ) : null,
+      ),
     )}
   </>
 );

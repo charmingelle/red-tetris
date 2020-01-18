@@ -3,14 +3,6 @@ import {
   LOAD_ROOM,
   LOAD_ROOMS,
   CHANGE_SHOW_LOBBY,
-} from '../constants';
-import socketIOClient from 'socket.io-client';
-import { store } from '../index';
-import { loadRooms } from '../actions/loadRooms';
-import { loadRoom } from '../actions/loadRoom';
-import { updateMyData } from '../actions/updateMyData';
-import { setTetro } from '../actions/setTetro';
-import {
   SET_TETRO,
   MOVE_TETRO,
   MOVE_TETRO_DOWN,
@@ -18,14 +10,17 @@ import {
   ROTATE_TETR0,
   RIGHT_LIMIT,
   BOTTOM_LIMIT,
-  LINE,
-  GI,
-  GI2,
-  SQUARE,
-  ZI,
-  ZI2,
-  TI,
+  SET_OTHER_PILE,
 } from '../constants';
+import socketIOClient from 'socket.io-client';
+import { store } from '../index';
+import {
+  loadRooms,
+  loadRoom,
+  updateMyData,
+  setTetro,
+  setOtherPile,
+} from '../actions';
 
 const login = 'user';
 
@@ -48,6 +43,10 @@ io.on('update-room', ({ room }) => {
 });
 
 io.on('set-tetro', ({ tetro }) => store.dispatch(setTetro(tetro)));
+
+io.on('set-other-pile', ({ roomId, playerId, pile }) =>
+  store.dispatch(setOtherPile({ roomId, playerId, pile })),
+);
 
 const initialState = {
   rooms: [],
@@ -82,6 +81,7 @@ const initialState = {
   myData: {
     id: null,
   },
+  others: {},
 };
 
 const wasPileHit = (figure, row, col, pile) => {
@@ -157,8 +157,6 @@ const getRotatedFigure = figure => {
   return rotatedFigure;
 };
 
-const isGameOver = pile => pile[0].some(el => el !== 0);
-
 const getPileWithRemovedRows = pile => {
   const newPile = JSON.parse(JSON.stringify(pile));
 
@@ -205,6 +203,19 @@ const getPileWithTetro = (pile, tetro) => {
   );
   return newPile;
 };
+
+const getNewTetro = state =>
+  state.socket.emit('get-tetro', {
+    roomId: state.room.id,
+    playerId: state.myData.id,
+  });
+
+const setMyPile = (socket, roomId, playerId, pile) =>
+  socket.emit('set-pile', {
+    roomId,
+    playerId,
+    pile,
+  });
 
 export const allReducers = (state = initialState, action) => {
   switch (action.type) {
@@ -259,17 +270,17 @@ export const allReducers = (state = initialState, action) => {
     }
     case DROP_TETRO: {
       if (state.game.tetro) {
-        state.socket.emit('get-tetro', {
-          roomId: state.room.id,
-          playerId: state.myData.id,
-        });
+        const newPile = getPileWithRemovedRows(
+          getPileWithDropedTetro(state.game.tetro, state.game.pile),
+        );
+
+        getNewTetro(state);
+        setMyPile(state.socket, state.room.id, state.myData.id, newPile);
         return {
           ...state,
           game: {
             ...state.game,
-            pile: getPileWithRemovedRows(
-              getPileWithDropedTetro(state.game.tetro, state.game.pile),
-            ),
+            pile: newPile,
           },
         };
       }
@@ -323,16 +334,17 @@ export const allReducers = (state = initialState, action) => {
             state.game.pile,
           )
         ) {
-          state.socket.emit('get-tetro', {
-            roomId: state.room.id,
-            playerId: state.myData.id,
-          });
+          const newPile = getPileWithRemovedRows(
+            getPileWithTetro(state.game.pile, state.game.tetro),
+          );
+
+          getNewTetro(state);
+          setMyPile(state.socket, state.room.id, state.myData.id, newPile);
           return {
             ...state,
             game: {
-              pile: getPileWithRemovedRows(
-                getPileWithTetro(state.game.pile, state.game.tetro),
-              ),
+              ...state.game,
+              pile: newPile,
             },
           };
         } else {
@@ -351,6 +363,19 @@ export const allReducers = (state = initialState, action) => {
         }
       }
       return state;
+    }
+    case SET_OTHER_PILE: {
+      const { roomId, playerId, pile } = action.payload;
+
+      return roomId === state.room.id
+        ? {
+            ...state,
+            others: {
+              ...state.others,
+              [playerId]: pile,
+            },
+          }
+        : state;
     }
     default: {
       return state;

@@ -2,13 +2,16 @@ import React from 'react';
 import { connect } from 'react-redux';
 import './Game.css';
 import { Tetromino } from '../Tetromino';
-import { moveTetro } from '../../actions/moveTetro';
-import { moveTetroDown } from '../../actions/moveTetroDown';
-import { dropTetro } from '../../actions/dropTetro';
-import { rotateTetro } from '../../actions/rotateTetro';
+import {
+  moveTetro,
+  moveTetroDown,
+  dropTetro,
+  rotateTetro,
+} from '../../actions';
 import { LEFT, RIGHT, DOWN, UP } from '../../constants';
 import { Pile } from '../Pile';
 import { store } from '../../index';
+import { Others } from '../Others';
 
 const keyDownHandler = ({ key }) => {
   switch (key) {
@@ -38,18 +41,8 @@ window.setInterval(() => store.dispatch(moveTetroDown()), 750);
 
 window.addEventListener('keydown', keyDownHandler);
 
-const renderPlayers = (myData, room) =>
-  room.players.length === 1 ? (
-    <div>You are playing along</div>
-  ) : (
-    <ul className="players-list">
-      {room.players
-        .filter(({ id }) => id !== myData.id)
-        .map(({ id }) => (
-          <li key={id}>{id}</li>
-        ))}
-    </ul>
-  );
+const renderPlayers = room =>
+  room.players.length === 1 ? <div>You are playing along</div> : <Others />;
 
 const startGame = (socket, room) => () => {
   console.log('start game click', socket, room);
@@ -70,28 +63,28 @@ const renderGameDetails = (socket, myData, room) => (
   <div className="game-details">
     {renderStartGameButton(socket, myData, room)}
     {renderGameStatus(room)}
-    {renderPlayers(myData, room)}
+    {renderPlayers(room)}
   </div>
 );
 
-const GameInner = ({ socket, myData, room }) => {
-  console.log('myData from game', myData, 'room from game', room);
+const renderField = () => (
+  <div className="field" tabIndex={0}>
+    <Tetromino />
+    <Pile />
+  </div>
+);
 
-  return (
-    <div className="room">
-      <div className="field-container">
-        <div>{`Hi, ${myData.id}`}</div>
-        <div className="field" tabIndex={0}>
-          <Tetromino />
-          <Pile />
-        </div>
-      </div>
-      <div className="game-details-container">
-        {room && renderGameDetails(socket, myData, room)}
-      </div>
+const GameInner = ({ socket, myData, room }) => (
+  <div className="room">
+    <div className="field-container">
+      <div>{`Hi, ${myData.id}`}</div>
+      {renderField()}
     </div>
-  );
-};
+    <div className="game-details-container">
+      {room && renderGameDetails(socket, myData, room)}
+    </div>
+  </div>
+);
 
 const mapStateToProps = ({ socket, myData, room }) => ({
   socket,

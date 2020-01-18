@@ -1,14 +1,15 @@
-import React from "react";
-import "./Square.css";
-import { SHIFT } from "../../constants";
+import React from 'react';
+import './Square.css';
 
-export const Square = ({ left, top, color }) => (
+export const Square = ({ left, top, color, shift }) => (
   <div
     className="square"
     style={{
-      left: `${left * SHIFT}px`,
-      top: `${top * SHIFT}px`,
-      backgroundColor: color
+      left: `${left * shift}px`,
+      top: `${top * shift}px`,
+      width: `${shift}px`,
+      height: `${shift}px`,
+      backgroundColor: color,
     }}
   ></div>
 );
