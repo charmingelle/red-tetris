@@ -8,26 +8,42 @@
   width: 70%;
   height: 100vh;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  background-color: wheat;
+  background-color: #666666;
 }
 
 .field {
   position: relative;
   width: 500px;
   height: 1000px;
-  outline: 1px solid grey;
+  outline: 5px solid #999;
+  background-color: black;
 }
 
 .game-details-container {
   width: 30%;
   height: 100vh;
-  background-color: burlywood;
+  overflow: scroll;
+  background-color: #333;
 }
 
 .game-details {
+  padding: 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.start-game-button {
+  background-color: #9901cc;
+  border: 5px solid;
+  border-left-color: #b804e6;
+  border-top-color: #b804e6;
+  border-right-color: #660099;
+  border-bottom-color: #660099;
+  color: #999;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 10px;
 }

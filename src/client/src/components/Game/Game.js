@@ -41,9 +41,6 @@ window.setInterval(() => store.dispatch(moveTetroDown()), 750);
 
 window.addEventListener('keydown', keyDownHandler);
 
-const renderPlayers = room =>
-  room.players.length === 1 ? <div>You are playing along</div> : <Others />;
-
 const startGame = (socket, room) => () => {
   console.log('start game click', socket, room);
   socket.emit('start-game', {
@@ -53,17 +50,15 @@ const startGame = (socket, room) => () => {
 
 const renderStartGameButton = (socket, myData, room) =>
   myData.id === room.leader && !room.game ? (
-    <button onClick={startGame(socket, room)}>Start Game</button>
+    <button className="start-game-button" onClick={startGame(socket, room)}>
+      START
+    </button>
   ) : null;
-
-const renderGameStatus = room =>
-  room.game ? <div>Game in progress</div> : null;
 
 const renderGameDetails = (socket, myData, room) => (
   <div className="game-details">
     {renderStartGameButton(socket, myData, room)}
-    {renderGameStatus(room)}
-    {renderPlayers(room)}
+    <Others />
   </div>
 );
 
@@ -76,10 +71,7 @@ const renderField = () => (
 
 const GameInner = ({ socket, myData, room }) => (
   <div className="room">
-    <div className="field-container">
-      <div>{`Hi, ${myData.id}`}</div>
-      {renderField()}
-    </div>
+    <div className="field-container">{renderField()}</div>
     <div className="game-details-container">
       {room && renderGameDetails(socket, myData, room)}
     </div>

@@ -42,13 +42,41 @@ const TI = [
   [0, 0, 0],
 ];
 
-const RED = 'red';
-const ORANGE = 'orange';
-const YELLOW = 'yellow';
-const GREEN = 'green';
-const BLUE = 'blue';
-const PURPLE = 'purple';
-const VIOLET = 'violet';
+const RED = {
+  main: '#c00',
+  lighter: '#f00',
+  darker: '#980000',
+};
+const ORANGE = {
+  main: '#f77700',
+  lighter: '#f7923a',
+  darker: '#9b4e00',
+};
+const YELLOW = {
+  main: '#cccc00',
+  lighter: '#feff00',
+  darker: '#9a9800',
+};
+const GREEN = {
+  main: '#129c0a',
+  lighter: '#3bd652',
+  darker: '#077001',
+};
+const BLUE = {
+  main: '#06cccc',
+  lighter: '#0cffff',
+  darker: '#108d8e',
+};
+const PURPLE = {
+  main: '#0d05f3',
+  lighter: '#3033f2',
+  darker: '#020279',
+};
+const VIOLET = {
+  main: '#9901cc',
+  lighter: '#cc02ff',
+  darker: '#660099',
+};
 
 // Each room has players
 // Each player has his own game field with pile and tetro

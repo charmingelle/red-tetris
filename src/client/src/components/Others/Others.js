@@ -26,8 +26,8 @@ const OthersInner = ({ others }) => (
   <ul className="others">
     {Object.keys(others).map(playerId => (
       <li key={playerId} className="other">
-        <div>{playerId}</div>
         {renderOtherPile(others[playerId])}
+        <div className="score">{`${playerId}: 0`}</div>
       </li>
     ))}
   </ul>
