@@ -109,6 +109,7 @@ class Player {
     this.tetroIndex = -1;
     this.tetro = null;
     this.game = null;
+    this.score = 0;
   }
 
   setGame(game) {
@@ -125,11 +126,20 @@ class Player {
     this.pile = pile;
   }
 
+  increaseScore(points) {
+    this.score += points;
+  }
+
+  getScore() {
+    return this.score;
+  }
+
   getPlayerData() {
     return {
       id: this.id,
       pile: this.pile,
       tetro: this.tetro,
+      score: this.score,
     };
   }
 }
@@ -294,6 +304,23 @@ io.on('connection', socket => {
           roomId,
           playerId,
           pile,
+        });
+      }
+    }
+  });
+
+  socket.on('increase-score', ({ roomId, playerId, points }) => {
+    const room = rooms[roomId];
+
+    if (room) {
+      const player = room.players.find(player => player.id === playerId);
+
+      if (player) {
+        player.increaseScore(points);
+        socket.broadcast.emit('set-other-score', {
+          roomId,
+          playerId,
+          score: player.getScore(),
         });
       }
     }

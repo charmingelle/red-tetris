@@ -62,26 +62,30 @@ const renderGameDetails = (socket, myData, room) => (
   </div>
 );
 
-const renderField = () => (
-  <div className="field" tabIndex={0}>
-    <Tetromino />
-    <Pile />
+const renderField = (myData, game) => (
+  <div className="field-container">
+    <div className="field" tabIndex={0}>
+      <Tetromino />
+      <Pile />
+    </div>
+    <div className="my-score">{`${myData.id}: ${game.score}`}</div>
   </div>
 );
 
-const GameInner = ({ socket, myData, room }) => (
+const GameInner = ({ socket, myData, room, game }) => (
   <div className="room">
-    <div className="field-container">{renderField()}</div>
+    {renderField(myData, game)}
     <div className="game-details-container">
       {room && renderGameDetails(socket, myData, room)}
     </div>
   </div>
 );
 
-const mapStateToProps = ({ socket, myData, room }) => ({
+const mapStateToProps = ({ socket, myData, room, game }) => ({
   socket,
   myData,
   room,
+  game,
 });
 
 export const Game = connect(mapStateToProps)(GameInner);

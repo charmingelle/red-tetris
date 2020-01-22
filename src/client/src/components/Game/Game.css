@@ -8,6 +8,7 @@
   width: 70%;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: #666666;
@@ -17,8 +18,14 @@
   position: relative;
   width: 500px;
   height: 1000px;
-  outline: 5px solid #999;
+  outline: 5px solid #f9f9f9;
   background-color: black;
+}
+
+.my-score {
+  margin-top: 30px;
+  font-size: 36px;
+  color: #f9f9f9;
 }
 
 .game-details-container {

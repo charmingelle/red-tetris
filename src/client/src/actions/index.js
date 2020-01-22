@@ -7,6 +7,7 @@ import {
   MOVE_TETRO_DOWN,
   ROTATE_TETR0,
   SET_OTHER_PILE,
+  SET_OTHER_SCORE,
   SET_TETRO,
   UPDATE_MY_DATA,
 } from '../constants';
@@ -46,6 +47,11 @@ export const rotateTetro = () => ({
 export const setOtherPile = ({ roomId, playerId, pile }) => ({
   type: SET_OTHER_PILE,
   payload: { roomId, playerId, pile },
+});
+
+export const setOtherScore = ({ roomId, playerId, score }) => ({
+  type: SET_OTHER_SCORE,
+  payload: { roomId, playerId, score },
 });
 
 export const setTetro = tetro => ({

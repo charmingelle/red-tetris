@@ -22,17 +22,22 @@ const renderOtherPile = pile => (
   </div>
 );
 
-const OthersInner = ({ others }) => (
+const OthersInner = ({ myId, players }) => (
   <ul className="others">
-    {Object.keys(others).map(playerId => (
-      <li key={playerId} className="other">
-        {renderOtherPile(others[playerId])}
-        <div className="score">{`${playerId}: 0`}</div>
-      </li>
-    ))}
+    {players
+      .filter(({ id }) => id !== myId)
+      .map(({ id, pile, score }) => (
+        <li key={id} className="other">
+          {renderOtherPile(pile)}
+          <div className="score">{`${id}: ${score}`}</div>
+        </li>
+      ))}
   </ul>
 );
 
-const mapStateToProps = ({ others }) => ({ others });
+const mapStateToProps = ({ myData: { id: myId }, room: { players } }) => ({
+  myId,
+  players,
+});
 
 export const Others = connect(mapStateToProps)(OthersInner);

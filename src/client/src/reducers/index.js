@@ -11,6 +11,7 @@ import {
   RIGHT_LIMIT,
   BOTTOM_LIMIT,
   SET_OTHER_PILE,
+  SET_OTHER_SCORE,
 } from '../constants';
 import socketIOClient from 'socket.io-client';
 import { store } from '../index';
@@ -20,6 +21,7 @@ import {
   updateMyData,
   setTetro,
   setOtherPile,
+  setOtherScore,
 } from '../actions';
 
 const login = 'user';
@@ -48,6 +50,10 @@ io.on('set-other-pile', ({ roomId, playerId, pile }) =>
   store.dispatch(setOtherPile({ roomId, playerId, pile })),
 );
 
+io.on('set-other-score', ({ roomId, playerId, score }) =>
+  store.dispatch(setOtherScore({ roomId, playerId, score })),
+);
+
 const initialState = {
   rooms: [],
   game: {
@@ -74,6 +80,7 @@ const initialState = {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ],
     tetro: null,
+    score: 0,
   },
   showLobby: true,
   socket: io,
@@ -81,7 +88,6 @@ const initialState = {
   myData: {
     id: null,
   },
-  others: {},
 };
 
 const wasPileHit = (figure, row, col, pile) => {
@@ -157,17 +163,20 @@ const getRotatedFigure = figure => {
   return rotatedFigure;
 };
 
-const getPileWithRemovedRows = pile => {
+const getPileWithRemovedRows = (pile, socket, roomId, playerId) => {
   const newPile = JSON.parse(JSON.stringify(pile));
+  let points = 0;
 
   for (let rowIndex = BOTTOM_LIMIT - 1; rowIndex >= 0; rowIndex--) {
     if (newPile[rowIndex].every(el => el !== 0)) {
       newPile.splice(rowIndex, 1);
       newPile.unshift(new Array(10).fill(0));
       rowIndex++;
+      points++;
     }
   }
-  return newPile;
+  increaseMyScore(socket, roomId, playerId, points);
+  return { newPile, points };
 };
 
 const getPileWithDropedTetro = (tetro, pile) => {
@@ -215,6 +224,13 @@ const setMyPile = (socket, roomId, playerId, pile) =>
     roomId,
     playerId,
     pile,
+  });
+
+const increaseMyScore = (socket, roomId, playerId, points) =>
+  socket.emit('increase-score', {
+    roomId,
+    playerId,
+    points,
   });
 
 export const allReducers = (state = initialState, action) => {
@@ -270,8 +286,11 @@ export const allReducers = (state = initialState, action) => {
     }
     case DROP_TETRO: {
       if (state.game.tetro) {
-        const newPile = getPileWithRemovedRows(
+        const { newPile, points } = getPileWithRemovedRows(
           getPileWithDropedTetro(state.game.tetro, state.game.pile),
+          state.socket,
+          state.room.id,
+          state.myData.id,
         );
 
         getNewTetro(state);
@@ -281,6 +300,7 @@ export const allReducers = (state = initialState, action) => {
           game: {
             ...state.game,
             pile: newPile,
+            score: state.game.score + points,
           },
         };
       }
@@ -334,8 +354,11 @@ export const allReducers = (state = initialState, action) => {
             state.game.pile,
           )
         ) {
-          const newPile = getPileWithRemovedRows(
+          const { newPile, points } = getPileWithRemovedRows(
             getPileWithTetro(state.game.pile, state.game.tetro),
+            state.socket,
+            state.room.id,
+            state.myData.id,
           );
 
           getNewTetro(state);
@@ -345,6 +368,7 @@ export const allReducers = (state = initialState, action) => {
             game: {
               ...state.game,
               pile: newPile,
+              score: state.game.score + points,
             },
           };
         } else {
@@ -367,15 +391,38 @@ export const allReducers = (state = initialState, action) => {
     case SET_OTHER_PILE: {
       const { roomId, playerId, pile } = action.payload;
 
-      return roomId === state.room.id
-        ? {
-            ...state,
-            others: {
-              ...state.others,
-              [playerId]: pile,
-            },
-          }
-        : state;
+      if (roomId === state.room.id) {
+        const newPlayers = JSON.parse(JSON.stringify(state.room.players));
+        const player = newPlayers.find(({ id }) => id === playerId);
+
+        newPlayers[newPlayers.indexOf(player)].pile = pile;
+        return {
+          ...state,
+          room: {
+            ...state.room,
+            players: newPlayers,
+          },
+        };
+      }
+      return state;
+    }
+    case SET_OTHER_SCORE: {
+      const { roomId, playerId, score } = action.payload;
+
+      if (roomId === state.room.id) {
+        const newPlayers = JSON.parse(JSON.stringify(state.room.players));
+        const player = newPlayers.find(({ id }) => id === playerId);
+
+        newPlayers[newPlayers.indexOf(player)].score = score;
+        return {
+          ...state,
+          room: {
+            ...state.room,
+            players: newPlayers,
+          },
+        };
+      }
+      return state;
     }
     default: {
       return state;
