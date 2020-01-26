@@ -110,6 +110,7 @@ class Player {
     this.tetro = null;
     this.game = null;
     this.score = 0;
+    this.isGameOver = false;
   }
 
   setGame(game) {
@@ -117,9 +118,11 @@ class Player {
   }
 
   setTetro() {
-    this.tetroIndex += 1;
-    this.tetro = this.game.getTetro(this.tetroIndex);
-    io.to(this.id).emit('set-tetro', { tetro: this.tetro });
+    if (!this.isGameOver) {
+      this.tetroIndex += 1;
+      this.tetro = this.game.getTetro(this.tetroIndex);
+      io.to(this.id).emit('set-tetro', { tetro: this.tetro });
+    }
   }
 
   setPile(pile) {
@@ -128,6 +131,10 @@ class Player {
 
   increaseScore(points) {
     this.score += points;
+  }
+
+  finishGame() {
+    this.isGameOver = true;
   }
 
   getScore() {
@@ -140,6 +147,7 @@ class Player {
       pile: this.pile,
       tetro: this.tetro,
       score: this.score,
+      isGameOver: this.isGameOver,
     };
   }
 }
@@ -328,6 +336,22 @@ io.on('connection', socket => {
           roomId,
           playerId,
           score: player.getScore(),
+        });
+      }
+    }
+  });
+
+  socket.on('finish-game', ({ roomId, playerId }) => {
+    const room = rooms[roomId];
+
+    if (room) {
+      const player = room.players.find(player => player.id === playerId);
+
+      if (player) {
+        player.finishGame();
+        socket.broadcast.emit('set-other-game-finish', {
+          roomId,
+          playerId,
         });
       }
     }

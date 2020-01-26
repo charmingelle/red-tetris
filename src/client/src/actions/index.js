@@ -11,6 +11,7 @@ import {
   SET_PENALTY,
   SET_TETRO,
   UPDATE_MY_DATA,
+  SET_OTHER_GAME_FINISH,
 } from '../constants';
 
 export const changeShowLobby = showLobby => ({
@@ -58,6 +59,11 @@ export const setOtherScore = ({ roomId, playerId, score }) => ({
 export const setPenalty = ({ roomId, penalty }) => ({
   type: SET_PENALTY,
   payload: { roomId, penalty },
+});
+
+export const setOtherGameFinish = ({ roomId, playerId }) => ({
+  type: SET_OTHER_GAME_FINISH,
+  payload: { roomId, playerId },
 });
 
 export const setTetro = tetro => ({

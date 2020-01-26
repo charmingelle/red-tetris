@@ -27,3 +27,5 @@ export const PENALTY_COLOR = {
   lighter: '#999',
   darker: '#333',
 };
+
+export const SET_OTHER_GAME_FINISH = 'SET_OTHER_GAME_FINISH';

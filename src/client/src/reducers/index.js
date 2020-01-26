@@ -12,6 +12,7 @@ import {
   SET_OTHER_PILE,
   SET_OTHER_SCORE,
   SET_PENALTY,
+  SET_OTHER_GAME_FINISH,
 } from '../constants';
 import socketIOClient from 'socket.io-client';
 import { store } from '../index';
@@ -23,6 +24,7 @@ import {
   setOtherPile,
   setOtherScore,
   setPenalty,
+  setOtherGameFinish,
 } from '../actions';
 
 const login = 'user';
@@ -59,33 +61,40 @@ io.on('set-penalty', ({ roomId, penalty }) =>
   store.dispatch(setPenalty({ roomId, penalty })),
 );
 
+io.on('set-other-game-finish', ({ roomId, playerId }) =>
+  store.dispatch(setOtherGameFinish({ roomId, playerId })),
+);
+
+const initialPile = [
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+];
+
 const initialState = {
   rooms: [],
   game: {
-    pile: [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ],
+    pile: initialPile,
     tetro: null,
     score: 0,
+    isOver: false,
   },
   showLobby: true,
   socket: io,
@@ -235,6 +244,25 @@ const increaseMyScore = (socket, roomId, playerId, points) =>
     points,
   });
 
+const isGameOver = (newTetro, pile) => {
+  const { figure, row, col } = newTetro;
+
+  for (let i = 0; i < figure.length; i++) {
+    for (let j = 0; j < figure[i].length; j++) {
+      if (!pile[i + row] || pile[i + row][j + col] !== 0) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+const finishGame = (socket, roomId, playerId) =>
+  socket.emit('finish-game', {
+    roomId,
+    playerId,
+  });
+
 export const allReducers = (state = initialState, action) => {
   switch (action.type) {
     case LOAD_ROOM: {
@@ -250,6 +278,18 @@ export const allReducers = (state = initialState, action) => {
       return { ...state, showLobby: action.payload };
     }
     case SET_TETRO: {
+      if (isGameOver(action.payload, state.game.pile)) {
+        finishGame(state.socket, state.room.id, state.myData.id);
+        return {
+          ...state,
+          game: {
+            ...state.game,
+            tetro: action.payload,
+            pile: state.game.pile,
+            isOver: true,
+          },
+        };
+      }
       return {
         ...state,
         game: {
@@ -448,6 +488,23 @@ export const allReducers = (state = initialState, action) => {
           game: {
             ...state.game,
             pile: newPile,
+          },
+        };
+      }
+    }
+    case SET_OTHER_GAME_FINISH: {
+      const { roomId, playerId } = action.payload;
+
+      if (roomId === state.room.id) {
+        const newPlayers = JSON.parse(JSON.stringify(state.room.players));
+        const player = newPlayers.find(({ id }) => id === playerId);
+
+        newPlayers[newPlayers.indexOf(player)].isGameOver = true;
+        return {
+          ...state,
+          room: {
+            ...state.room,
+            players: newPlayers,
           },
         };
       }

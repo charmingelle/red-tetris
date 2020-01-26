@@ -63,12 +63,15 @@ const renderGameDetails = (socket, myData, room) => (
   </div>
 );
 
+const renderGameOver = () => <div className="game-over">GAME OVER</div>;
+
 const renderField = (myData, game) => (
   <div className="field-container">
     <div className="field" tabIndex={0}>
       <Tetromino />
       <Pile />
       <Penalty />
+      {game.isOver && renderGameOver()}
     </div>
     <div className="my-score">{`${myData.id}: ${game.score}`}</div>
   </div>

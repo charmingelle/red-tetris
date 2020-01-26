@@ -54,3 +54,16 @@
   font-weight: bold;
   padding: 10px;
 }
+
+.game-over {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #c00;
+  color: #fff;
+  font-size: 36px;
+  font-weight: bold;
+  padding: 15px;
+  border: 5px solid white;
+}

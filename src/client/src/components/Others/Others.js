@@ -9,6 +9,10 @@ import {
   PENALTY_COLOR,
 } from '../../constants';
 
+const renderOtherGameOver = () => (
+  <div className="other-game-over">GAME OVER</div>
+);
+
 const renderOtherPenalty = startRow => {
   const penaltyRows = [];
 
@@ -28,32 +32,38 @@ const renderOtherPenalty = startRow => {
   return <>{penaltyRows}</>;
 };
 
-const renderOtherPile = pile => (
-  <div className="other-pile">
-    {pile.map((row, rowIndex) =>
-      row.map((el, colIndex) =>
-        el !== 0 ? (
-          <Square
-            left={colIndex}
-            top={rowIndex}
-            color={el}
-            key={`${rowIndex}+${colIndex}`}
-            shift={OTHER_SHIFT}
-          />
-        ) : null,
-      ),
-    )}
-    {renderOtherPenalty(pile.length)}
-  </div>
-);
+const renderOtherPile = pile =>
+  pile.map((row, rowIndex) =>
+    row.map((el, colIndex) =>
+      el !== 0 ? (
+        <Square
+          left={colIndex}
+          top={rowIndex}
+          color={el}
+          key={`${rowIndex}+${colIndex}`}
+          shift={OTHER_SHIFT}
+        />
+      ) : null,
+    ),
+  );
+
+const renderOtherGame = (pile, isGameOver) =>
+  isGameOver ? (
+    renderOtherGameOver()
+  ) : (
+    <div className="other-pile">
+      {renderOtherPile(pile)}
+      {renderOtherPenalty(pile.length)}
+    </div>
+  );
 
 const OthersInner = ({ myId, players }) => (
   <ul className="others">
     {players
       .filter(({ id }) => id !== myId)
-      .map(({ id, pile, score }) => (
+      .map(({ id, pile, score, isGameOver }) => (
         <li key={id} className="other">
-          {renderOtherPile(pile)}
+          {renderOtherGame(pile, isGameOver)}
           <div className="score">{`${id}: ${score}`}</div>
         </li>
       ))}
