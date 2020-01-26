@@ -317,6 +317,13 @@ io.on('connection', socket => {
 
       if (player) {
         player.increaseScore(points);
+        if (points > 0) {
+          socket.broadcast.emit('set-penalty', {
+            roomId,
+            playerId,
+            penalty: points,
+          });
+        }
         socket.broadcast.emit('set-other-score', {
           roomId,
           playerId,

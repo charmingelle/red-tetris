@@ -14,9 +14,16 @@ export const DROP_TETRO = 'DROP_TETRO';
 export const ROTATE_TETR0 = 'ROTATE_TETRO';
 export const SET_OTHER_PILE = 'SET_OTHER_PILE';
 export const SET_OTHER_SCORE = 'SET_OTHER_SCORE';
+export const SET_PENALTY = 'SET_PENALTY';
 
 export const RIGHT_LIMIT = 10;
 export const BOTTOM_LIMIT = 20;
 
 export const SHIFT = 50;
 export const OTHER_SHIFT = 10;
+
+export const PENALTY_COLOR = {
+  main: '#666666',
+  lighter: '#999',
+  darker: '#333',
+};

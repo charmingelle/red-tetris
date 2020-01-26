@@ -8,6 +8,7 @@ import {
   ROTATE_TETR0,
   SET_OTHER_PILE,
   SET_OTHER_SCORE,
+  SET_PENALTY,
   SET_TETRO,
   UPDATE_MY_DATA,
 } from '../constants';
@@ -52,6 +53,11 @@ export const setOtherPile = ({ roomId, playerId, pile }) => ({
 export const setOtherScore = ({ roomId, playerId, score }) => ({
   type: SET_OTHER_SCORE,
   payload: { roomId, playerId, score },
+});
+
+export const setPenalty = ({ roomId, penalty }) => ({
+  type: SET_PENALTY,
+  payload: { roomId, penalty },
 });
 
 export const setTetro = tetro => ({

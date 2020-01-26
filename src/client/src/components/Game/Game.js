@@ -12,6 +12,7 @@ import { LEFT, RIGHT, DOWN, UP } from '../../constants';
 import { Pile } from '../Pile';
 import { store } from '../../index';
 import { Others } from '../Others';
+import { Penalty } from '../Penalty';
 
 const keyDownHandler = ({ key }) => {
   switch (key) {
@@ -67,6 +68,7 @@ const renderField = (myData, game) => (
     <div className="field" tabIndex={0}>
       <Tetromino />
       <Pile />
+      <Penalty />
     </div>
     <div className="my-score">{`${myData.id}: ${game.score}`}</div>
   </div>

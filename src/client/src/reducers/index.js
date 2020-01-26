@@ -9,9 +9,9 @@ import {
   DROP_TETRO,
   ROTATE_TETR0,
   RIGHT_LIMIT,
-  BOTTOM_LIMIT,
   SET_OTHER_PILE,
   SET_OTHER_SCORE,
+  SET_PENALTY,
 } from '../constants';
 import socketIOClient from 'socket.io-client';
 import { store } from '../index';
@@ -22,6 +22,7 @@ import {
   setTetro,
   setOtherPile,
   setOtherScore,
+  setPenalty,
 } from '../actions';
 
 const login = 'user';
@@ -52,6 +53,10 @@ io.on('set-other-pile', ({ roomId, playerId, pile }) =>
 
 io.on('set-other-score', ({ roomId, playerId, score }) =>
   store.dispatch(setOtherScore({ roomId, playerId, score })),
+);
+
+io.on('set-penalty', ({ roomId, penalty }) =>
+  store.dispatch(setPenalty({ roomId, penalty })),
 );
 
 const initialState = {
@@ -91,7 +96,7 @@ const initialState = {
 };
 
 const wasPileHit = (figure, row, col, pile) => {
-  const lastRow = BOTTOM_LIMIT - 1;
+  const lastRow = pile.length - 1;
 
   for (let rowIndex = 0; rowIndex < figure.length; rowIndex++) {
     for (let colIndex = 0; colIndex < figure[rowIndex].length; colIndex++) {
@@ -109,7 +114,7 @@ const wasPileHit = (figure, row, col, pile) => {
   return false;
 };
 
-const isTetroInsideField = (figure, row, col) => {
+const isTetroInsideField = (pile, figure, row, col) => {
   for (let rowIndex = 0; rowIndex < figure.length; rowIndex++) {
     for (let colIndex = 0; colIndex < figure[rowIndex].length; colIndex++) {
       const elRow = rowIndex + row;
@@ -117,10 +122,7 @@ const isTetroInsideField = (figure, row, col) => {
 
       if (
         figure[rowIndex][colIndex] !== 0 &&
-        (elRow < 0 ||
-          elRow >= BOTTOM_LIMIT ||
-          elCol < 0 ||
-          elCol >= RIGHT_LIMIT)
+        (elRow < 0 || elRow >= pile.length || elCol < 0 || elCol >= RIGHT_LIMIT)
       ) {
         return false;
       }
@@ -167,7 +169,7 @@ const getPileWithRemovedRows = (pile, socket, roomId, playerId) => {
   const newPile = JSON.parse(JSON.stringify(pile));
   let points = 0;
 
-  for (let rowIndex = BOTTOM_LIMIT - 1; rowIndex >= 0; rowIndex--) {
+  for (let rowIndex = pile.length - 1; rowIndex >= 0; rowIndex--) {
     if (newPile[rowIndex].every(el => el !== 0)) {
       newPile.splice(rowIndex, 1);
       newPile.unshift(new Array(10).fill(0));
@@ -182,7 +184,7 @@ const getPileWithRemovedRows = (pile, socket, roomId, playerId) => {
 const getPileWithDropedTetro = (tetro, pile) => {
   const { figure, col, color } = tetro;
 
-  for (let rowIndex = 0; rowIndex < BOTTOM_LIMIT; rowIndex++) {
+  for (let rowIndex = 0; rowIndex < pile.length; rowIndex++) {
     if (wasPileHit(figure, rowIndex, col, pile)) {
       const newPile = JSON.parse(JSON.stringify(pile));
 
@@ -261,7 +263,14 @@ export const allReducers = (state = initialState, action) => {
         const newRow = state.game.tetro.row + action.payload.top;
         const newCol = state.game.tetro.col + action.payload.left;
 
-        if (!isTetroInsideField(state.game.tetro.figure, newRow, newCol)) {
+        if (
+          !isTetroInsideField(
+            state.game.pile,
+            state.game.tetro.figure,
+            newRow,
+            newCol,
+          )
+        ) {
           return state;
         }
         if (
@@ -312,6 +321,7 @@ export const allReducers = (state = initialState, action) => {
 
         if (
           !isTetroInsideField(
+            state.game.pile,
             rotatedFigure,
             state.game.tetro.row,
             state.game.tetro.col,
@@ -423,6 +433,24 @@ export const allReducers = (state = initialState, action) => {
         };
       }
       return state;
+    }
+    case SET_PENALTY: {
+      const { roomId, penalty } = action.payload;
+
+      if (roomId === state.room.id) {
+        const newPile = JSON.parse(JSON.stringify(state.game.pile));
+
+        for (let i = 0; i < penalty; i++) {
+          newPile.shift(penalty);
+        }
+        return {
+          ...state,
+          game: {
+            ...state.game,
+            pile: newPile,
+          },
+        };
+      }
     }
     default: {
       return state;

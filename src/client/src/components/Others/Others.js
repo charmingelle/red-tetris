@@ -2,7 +2,31 @@ import React from 'react';
 import { connect } from 'react-redux';
 import './Others.css';
 import { Square } from '../Square';
-import { OTHER_SHIFT } from '../../constants';
+import {
+  OTHER_SHIFT,
+  BOTTOM_LIMIT,
+  RIGHT_LIMIT,
+  PENALTY_COLOR,
+} from '../../constants';
+
+const renderOtherPenalty = startRow => {
+  const penaltyRows = [];
+
+  for (let rowIndex = startRow; rowIndex < BOTTOM_LIMIT; rowIndex++) {
+    for (let colIndex = 0; colIndex < RIGHT_LIMIT; colIndex++) {
+      penaltyRows.unshift(
+        <Square
+          left={colIndex}
+          top={rowIndex}
+          color={PENALTY_COLOR}
+          key={`${rowIndex}+${colIndex}`}
+          shift={OTHER_SHIFT}
+        />,
+      );
+    }
+  }
+  return <>{penaltyRows}</>;
+};
 
 const renderOtherPile = pile => (
   <div className="other-pile">
@@ -19,6 +43,7 @@ const renderOtherPile = pile => (
         ) : null,
       ),
     )}
+    {renderOtherPenalty(pile.length)}
   </div>
 );
 
