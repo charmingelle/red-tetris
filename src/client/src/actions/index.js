@@ -12,6 +12,7 @@ import {
   SET_TETRO,
   UPDATE_MY_DATA,
   SET_OTHER_GAME_FINISH,
+  REMOVE_PLAYER,
 } from '../constants';
 
 export const changeShowLobby = showLobby => ({
@@ -74,4 +75,9 @@ export const setTetro = tetro => ({
 export const updateMyData = myData => ({
   type: UPDATE_MY_DATA,
   payload: myData,
+});
+
+export const removePlayer = ({ roomId, playerId }) => ({
+  type: REMOVE_PLAYER,
+  payload: { roomId, playerId },
 });

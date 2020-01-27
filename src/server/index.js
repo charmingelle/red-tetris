@@ -153,12 +153,11 @@ class Player {
 }
 
 class Game {
-  constructor(room, players) {
+  constructor(room) {
     this.room = room;
-    this.players = players;
     this.tetros = [this.getRandomTetro()];
 
-    this.players.forEach(player => {
+    this.room.players.forEach(player => {
       player.setGame(this);
       player.setTetro();
     });
@@ -188,7 +187,7 @@ class Game {
 
   getGameData() {
     return {
-      players: this.players.map(player => player.getPlayerData()),
+      players: this.room.players.map(player => player.getPlayerData()),
       tetro: this.tetros[this.tetros.length - 1],
     };
   }
@@ -207,8 +206,16 @@ class Room {
     this.players = [...this.players, new Player({ id: playerId })];
   }
 
+  removePlayer(player) {
+    const indexOfPlayer = this.players.indexOf(player);
+
+    if (indexOfPlayer !== -1) {
+      this.players.splice(indexOfPlayer, 1);
+    }
+  }
+
   startGame() {
-    this.game = new Game(this, this.players);
+    this.game = new Game(this);
   }
 
   endGame() {
@@ -237,6 +244,7 @@ io.on('connection', socket => {
   io.to(socket.id).emit('send-id', {
     id: socket.id,
   });
+
   io.to(socket.id).emit('update-rooms', {
     rooms: Object.keys(rooms).map(id => ({ id, ...rooms[id].getRoomData() })),
   });
@@ -355,5 +363,22 @@ io.on('connection', socket => {
         });
       }
     }
+  });
+
+  socket.on('disconnect', () => {
+    Object.keys(rooms).map(roomId => {
+      const room = rooms[roomId];
+      const playerToRemove = room.players.find(
+        player => player.id === socket.id,
+      );
+
+      if (playerToRemove) {
+        room.removePlayer(playerToRemove);
+        socket.broadcast.emit('remove-player', {
+          roomId,
+          playerId: playerToRemove.id,
+        });
+      }
+    });
   });
 });

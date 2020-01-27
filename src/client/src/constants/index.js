@@ -15,6 +15,7 @@ export const ROTATE_TETR0 = 'ROTATE_TETRO';
 export const SET_OTHER_PILE = 'SET_OTHER_PILE';
 export const SET_OTHER_SCORE = 'SET_OTHER_SCORE';
 export const SET_PENALTY = 'SET_PENALTY';
+export const REMOVE_PLAYER = 'REMOVE_PLAYER';
 
 export const RIGHT_LIMIT = 10;
 export const BOTTOM_LIMIT = 20;

@@ -13,6 +13,7 @@ import {
   SET_OTHER_SCORE,
   SET_PENALTY,
   SET_OTHER_GAME_FINISH,
+  REMOVE_PLAYER,
 } from '../constants';
 import socketIOClient from 'socket.io-client';
 import { store } from '../index';
@@ -25,6 +26,7 @@ import {
   setOtherScore,
   setPenalty,
   setOtherGameFinish,
+  removePlayer,
 } from '../actions';
 
 const login = 'user';
@@ -63,6 +65,10 @@ io.on('set-penalty', ({ roomId, penalty }) =>
 
 io.on('set-other-game-finish', ({ roomId, playerId }) =>
   store.dispatch(setOtherGameFinish({ roomId, playerId })),
+);
+
+io.on('remove-player', ({ roomId, playerId }) =>
+  store.dispatch(removePlayer({ roomId, playerId })),
 );
 
 const initialPile = [
@@ -491,6 +497,7 @@ export const allReducers = (state = initialState, action) => {
           },
         };
       }
+      return state;
     }
     case SET_OTHER_GAME_FINISH: {
       const { roomId, playerId } = action.payload;
@@ -508,6 +515,28 @@ export const allReducers = (state = initialState, action) => {
           },
         };
       }
+      return state;
+    }
+    case REMOVE_PLAYER: {
+      const { roomId, playerId } = action.payload;
+
+      if (roomId === state.room.id) {
+        const newPlayers = JSON.parse(JSON.stringify(state.room.players));
+        const player = newPlayers.find(({ id }) => id === playerId);
+        const indexOfPlayer = newPlayers.indexOf(player);
+
+        if (indexOfPlayer !== -1) {
+          newPlayers.splice(indexOfPlayer, 1);
+          return {
+            ...state,
+            room: {
+              ...state.room,
+              players: newPlayers,
+            },
+          };
+        }
+      }
+      return state;
     }
     default: {
       return state;
