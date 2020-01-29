@@ -42,12 +42,10 @@ window.setInterval(() => store.dispatch(moveTetroDown()), 750);
 
 window.addEventListener('keydown', keyDownHandler);
 
-const startGame = (socket, room) => () => {
-  console.log('start game click', socket, room);
+const startGame = (socket, room) => () =>
   socket.emit('start-game', {
     roomId: room.id,
   });
-};
 
 const renderStartGameButton = (socket, myData, room) =>
   myData.id === room.leader && !room.game ? (

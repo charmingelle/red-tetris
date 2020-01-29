@@ -37,17 +37,11 @@ export const io = socketIOClient({
 
 io.on('update-rooms', ({ rooms }) => store.dispatch(loadRooms(rooms)));
 
-io.on('send-room', ({ room }) => {
-  console.log('room I joined', room);
-  store.dispatch(loadRoom(room));
-});
+io.on('send-room', ({ room }) => store.dispatch(loadRoom(room)));
 
 io.on('send-id', ({ id }) => store.dispatch(updateMyData({ id })));
 
-io.on('update-room', ({ room }) => {
-  console.log('update room happened');
-  store.dispatch(loadRoom(room));
-});
+io.on('update-room', ({ room }) => store.dispatch(loadRoom(room)));
 
 io.on('set-tetro', ({ tetro }) => store.dispatch(setTetro(tetro)));
 
@@ -449,9 +443,8 @@ export const allReducers = (state = initialState, action) => {
 
       if (roomId === state.room.id) {
         const newPlayers = JSON.parse(JSON.stringify(state.room.players));
-        const player = newPlayers.find(({ id }) => id === playerId);
 
-        newPlayers[newPlayers.indexOf(player)].pile = pile;
+        newPlayers[playerId].pile = pile;
         return {
           ...state,
           room: {
@@ -467,9 +460,8 @@ export const allReducers = (state = initialState, action) => {
 
       if (roomId === state.room.id) {
         const newPlayers = JSON.parse(JSON.stringify(state.room.players));
-        const player = newPlayers.find(({ id }) => id === playerId);
 
-        newPlayers[newPlayers.indexOf(player)].score = score;
+        newPlayers[playerId].score = score;
         return {
           ...state,
           room: {
@@ -504,9 +496,8 @@ export const allReducers = (state = initialState, action) => {
 
       if (roomId === state.room.id) {
         const newPlayers = JSON.parse(JSON.stringify(state.room.players));
-        const player = newPlayers.find(({ id }) => id === playerId);
 
-        newPlayers[newPlayers.indexOf(player)].isGameOver = true;
+        newPlayers[playerId].isGameOver = true;
         return {
           ...state,
           room: {
@@ -522,19 +513,16 @@ export const allReducers = (state = initialState, action) => {
 
       if (roomId === state.room.id) {
         const newPlayers = JSON.parse(JSON.stringify(state.room.players));
-        const player = newPlayers.find(({ id }) => id === playerId);
-        const indexOfPlayer = newPlayers.indexOf(player);
 
-        if (indexOfPlayer !== -1) {
-          newPlayers.splice(indexOfPlayer, 1);
-          return {
-            ...state,
-            room: {
-              ...state.room,
-              players: newPlayers,
-            },
-          };
-        }
+        delete newPlayers[playerId];
+
+        return {
+          ...state,
+          room: {
+            ...state.room,
+            players: newPlayers,
+          },
+        };
       }
       return state;
     }

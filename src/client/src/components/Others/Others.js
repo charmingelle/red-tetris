@@ -59,7 +59,7 @@ const renderOtherGame = (pile, isGameOver) =>
 
 const OthersInner = ({ myId, players }) => (
   <ul className="others">
-    {players
+    {Object.values(players)
       .filter(({ id }) => id !== myId)
       .map(({ id, pile, score, isGameOver }) => (
         <li key={id} className="other">

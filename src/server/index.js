@@ -78,9 +78,6 @@ const VIOLET = {
   darker: '#660099',
 };
 
-// Each room has players
-// Each player has his own game field with pile and tetro
-
 class Player {
   constructor({ id }) {
     this.id = id;
@@ -157,7 +154,7 @@ class Game {
     this.room = room;
     this.tetros = [this.getRandomTetro()];
 
-    this.room.players.forEach(player => {
+    Object.values(this.room.players).forEach(player => {
       player.setGame(this);
       player.setTetro();
     });
@@ -186,15 +183,22 @@ class Game {
   }
 
   getGameData() {
+    const clientPlayers = {};
+
+    Object.keys(this.room.players).map(
+      playerId =>
+        (clientPlayers[playerId] = this.room.players[playerId].getPlayerData()),
+    );
+
     return {
-      players: this.room.players.map(player => player.getPlayerData()),
+      players: clientPlayers,
       tetro: this.tetros[this.tetros.length - 1],
     };
   }
 }
 
 class Room {
-  constructor({ id, name, leader, players = [] }) {
+  constructor({ id, name, leader, players = {} }) {
     this.id = id;
     this.name = name;
     this.leader = leader;
@@ -203,15 +207,11 @@ class Room {
   }
 
   addPlayer(playerId) {
-    this.players = [...this.players, new Player({ id: playerId })];
+    this.players[playerId] = new Player({ id: playerId });
   }
 
-  removePlayer(player) {
-    const indexOfPlayer = this.players.indexOf(player);
-
-    if (indexOfPlayer !== -1) {
-      this.players.splice(indexOfPlayer, 1);
-    }
+  removePlayer(playerId) {
+    delete this.players[playerId];
   }
 
   startGame() {
@@ -223,11 +223,17 @@ class Room {
   }
 
   getRoomData() {
+    const clientPlayers = {};
+
+    Object.keys(this.players).map(
+      playerId =>
+        (clientPlayers[playerId] = this.players[playerId].getPlayerData()),
+    );
     return {
       id: this.id,
       name: this.name,
       leader: this.leader,
-      players: this.players.map(player => player.getPlayerData()),
+      players: clientPlayers,
       game: this.game ? this.game.getGameData() : null,
     };
   }
@@ -254,7 +260,7 @@ io.on('connection', socket => {
 
     if (room && socket.id === room.leader) {
       room.startGame();
-      room.players.forEach(player => {
+      Object.values(room.players).forEach(player => {
         io.to(player.id).emit('update-room', {
           room: rooms[roomId].getRoomData(),
         });
@@ -267,18 +273,15 @@ io.on('connection', socket => {
       ? Math.max(...Object.keys(rooms).map(roomId => parseInt(roomId))) + 1 + ''
       : '0';
 
-    console.log('leader', socket.id);
-
     rooms[newRoomId] = new Room({
       id: newRoomId,
       name,
       leader: socket.id,
-      players: [new Player({ id: socket.id })],
+      players: { [socket.id]: new Player({ id: socket.id }) },
     });
     io.to(socket.id).emit('send-room', {
       room: rooms[newRoomId].getRoomData(),
     });
-    console.log(rooms);
   });
 
   socket.on('join-room', ({ roomId }) => {
@@ -293,14 +296,13 @@ io.on('connection', socket => {
         room: rooms[roomId].getRoomData(),
       });
     }
-    console.log(rooms);
   });
 
   socket.on('get-tetro', ({ roomId, playerId }) => {
     const room = rooms[roomId];
 
     if (room) {
-      const player = room.players.find(player => player.id === playerId);
+      const player = room.players[playerId];
 
       if (player) {
         player.setTetro();
@@ -312,7 +314,7 @@ io.on('connection', socket => {
     const room = rooms[roomId];
 
     if (room) {
-      const player = room.players.find(player => player.id === playerId);
+      const player = room.players[playerId];
 
       if (player) {
         player.setPile(pile);
@@ -329,7 +331,7 @@ io.on('connection', socket => {
     const room = rooms[roomId];
 
     if (room) {
-      const player = room.players.find(player => player.id === playerId);
+      const player = room.players[playerId];
 
       if (player) {
         player.increaseScore(points);
@@ -353,7 +355,7 @@ io.on('connection', socket => {
     const room = rooms[roomId];
 
     if (room) {
-      const player = room.players.find(player => player.id === playerId);
+      const player = room.players[playerId];
 
       if (player) {
         player.finishGame();
@@ -368,12 +370,10 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     Object.keys(rooms).map(roomId => {
       const room = rooms[roomId];
-      const playerToRemove = room.players.find(
-        player => player.id === socket.id,
-      );
+      const playerToRemove = room.players[socket.id];
 
       if (playerToRemove) {
-        room.removePlayer(playerToRemove);
+        room.removePlayer(socket.id);
         socket.broadcast.emit('remove-player', {
           roomId,
           playerId: playerToRemove.id,
