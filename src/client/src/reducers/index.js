@@ -1,5 +1,5 @@
 import {
-  UPDATE_MY_DATA,
+  UPDATE_MY_ID,
   LOAD_ROOM,
   LOAD_ROOMS,
   CHANGE_SHOW_LOBBY,
@@ -20,7 +20,7 @@ import { store } from '../index';
 import {
   loadRooms,
   loadRoom,
-  updateMyData,
+  updateMyId,
   setTetro,
   setOtherPile,
   setOtherScore,
@@ -39,7 +39,7 @@ io.on('update-rooms', ({ rooms }) => store.dispatch(loadRooms(rooms)));
 
 io.on('send-room', ({ room }) => store.dispatch(loadRoom(room)));
 
-io.on('send-id', ({ id }) => store.dispatch(updateMyData({ id })));
+io.on('send-id', ({ id }) => store.dispatch(updateMyId(id)));
 
 io.on('update-room', ({ room }) => store.dispatch(loadRoom(room)));
 
@@ -89,18 +89,20 @@ const initialPile = [
 ];
 
 const initialState = {
+  showLobby: true,
+  myId: null,
   rooms: [],
+  socket: io,
+  roomId: null,
+  roomName: null,
+  leader: null,
+  players: {},
+  roomGame: null,
   game: {
     pile: initialPile,
     tetro: null,
     score: 0,
     isOver: false,
-  },
-  showLobby: true,
-  socket: io,
-  room: null,
-  myData: {
-    id: null,
   },
 };
 
@@ -226,8 +228,8 @@ const getPileWithTetro = (pile, tetro) => {
 
 const getNewTetro = state =>
   state.socket.emit('get-tetro', {
-    roomId: state.room.id,
-    playerId: state.myData.id,
+    roomId: state.roomId,
+    playerId: state.myId,
   });
 
 const setMyPile = (socket, roomId, playerId, pile) =>
@@ -266,10 +268,19 @@ const finishGame = (socket, roomId, playerId) =>
 export const allReducers = (state = initialState, action) => {
   switch (action.type) {
     case LOAD_ROOM: {
-      return { ...state, room: action.payload };
+      const { id, name, leader, players, game } = action.payload;
+
+      return {
+        ...state,
+        roomId: id,
+        roomName: name,
+        leader,
+        players,
+        roomGame: game,
+      };
     }
-    case UPDATE_MY_DATA: {
-      return { ...state, myData: action.payload };
+    case UPDATE_MY_ID: {
+      return { ...state, myId: action.payload };
     }
     case LOAD_ROOMS: {
       return { ...state, rooms: action.payload };
@@ -279,7 +290,7 @@ export const allReducers = (state = initialState, action) => {
     }
     case SET_TETRO: {
       if (isGameOver(action.payload, state.game.pile)) {
-        finishGame(state.socket, state.room.id, state.myData.id);
+        finishGame(state.socket, state.roomId, state.myId);
         return {
           ...state,
           game: {
@@ -338,12 +349,12 @@ export const allReducers = (state = initialState, action) => {
         const { newPile, points } = getPileWithRemovedRows(
           getPileWithDropedTetro(state.game.tetro, state.game.pile),
           state.socket,
-          state.room.id,
-          state.myData.id,
+          state.roomId,
+          state.myId,
         );
 
         getNewTetro(state);
-        setMyPile(state.socket, state.room.id, state.myData.id, newPile);
+        setMyPile(state.socket, state.roomId, state.myId, newPile);
         return {
           ...state,
           game: {
@@ -407,12 +418,12 @@ export const allReducers = (state = initialState, action) => {
           const { newPile, points } = getPileWithRemovedRows(
             getPileWithTetro(state.game.pile, state.game.tetro),
             state.socket,
-            state.room.id,
-            state.myData.id,
+            state.roomId,
+            state.myId,
           );
 
           getNewTetro(state);
-          setMyPile(state.socket, state.room.id, state.myData.id, newPile);
+          setMyPile(state.socket, state.roomId, state.myId, newPile);
           return {
             ...state,
             game: {
@@ -441,16 +452,13 @@ export const allReducers = (state = initialState, action) => {
     case SET_OTHER_PILE: {
       const { roomId, playerId, pile } = action.payload;
 
-      if (roomId === state.room.id) {
-        const newPlayers = JSON.parse(JSON.stringify(state.room.players));
+      if (roomId === state.roomId) {
+        const players = JSON.parse(JSON.stringify(state.players));
 
-        newPlayers[playerId].pile = pile;
+        players[playerId].pile = pile;
         return {
           ...state,
-          room: {
-            ...state.room,
-            players: newPlayers,
-          },
+          players,
         };
       }
       return state;
@@ -458,16 +466,13 @@ export const allReducers = (state = initialState, action) => {
     case SET_OTHER_SCORE: {
       const { roomId, playerId, score } = action.payload;
 
-      if (roomId === state.room.id) {
-        const newPlayers = JSON.parse(JSON.stringify(state.room.players));
+      if (roomId === state.roomId) {
+        const players = JSON.parse(JSON.stringify(state.players));
 
-        newPlayers[playerId].score = score;
+        players[playerId].score = score;
         return {
           ...state,
-          room: {
-            ...state.room,
-            players: newPlayers,
-          },
+          players,
         };
       }
       return state;
@@ -475,7 +480,7 @@ export const allReducers = (state = initialState, action) => {
     case SET_PENALTY: {
       const { roomId, penalty } = action.payload;
 
-      if (roomId === state.room.id) {
+      if (roomId === state.roomId) {
         const newPile = JSON.parse(JSON.stringify(state.game.pile));
 
         for (let i = 0; i < penalty; i++) {
@@ -494,16 +499,13 @@ export const allReducers = (state = initialState, action) => {
     case SET_OTHER_GAME_FINISH: {
       const { roomId, playerId } = action.payload;
 
-      if (roomId === state.room.id) {
-        const newPlayers = JSON.parse(JSON.stringify(state.room.players));
+      if (roomId === state.roomId) {
+        const players = JSON.parse(JSON.stringify(state.players));
 
-        newPlayers[playerId].isGameOver = true;
+        players[playerId].isGameOver = true;
         return {
           ...state,
-          room: {
-            ...state.room,
-            players: newPlayers,
-          },
+          players,
         };
       }
       return state;
@@ -511,17 +513,13 @@ export const allReducers = (state = initialState, action) => {
     case REMOVE_PLAYER: {
       const { roomId, playerId } = action.payload;
 
-      if (roomId === state.room.id) {
-        const newPlayers = JSON.parse(JSON.stringify(state.room.players));
+      if (roomId === state.roomId) {
+        const players = JSON.parse(JSON.stringify(state.players));
 
-        delete newPlayers[playerId];
-
+        delete players[playerId];
         return {
           ...state,
-          room: {
-            ...state.room,
-            players: newPlayers,
-          },
+          players,
         };
       }
       return state;

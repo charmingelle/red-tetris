@@ -241,6 +241,19 @@ class Room {
 
 const rooms = {};
 
+const getRoomPlayer = ({ roomId, playerId }) => {
+  const room = rooms[roomId];
+
+  if (room) {
+    const player = room.players[playerId];
+
+    if (player) {
+      return player;
+    }
+  }
+  return null;
+};
+
 io.use((socket, next) => {
   console.log(socket.id, socket.request._query.login);
   next();
@@ -299,78 +312,62 @@ io.on('connection', socket => {
   });
 
   socket.on('get-tetro', ({ roomId, playerId }) => {
-    const room = rooms[roomId];
+    const player = getRoomPlayer({ roomId, playerId });
 
-    if (room) {
-      const player = room.players[playerId];
-
-      if (player) {
-        player.setTetro();
-      }
+    if (player) {
+      player.setTetro();
     }
   });
 
   socket.on('set-pile', ({ roomId, playerId, pile }) => {
-    const room = rooms[roomId];
+    const player = getRoomPlayer({ roomId, playerId });
 
-    if (room) {
-      const player = room.players[playerId];
-
-      if (player) {
-        player.setPile(pile);
-        socket.broadcast.emit('set-other-pile', {
-          roomId,
-          playerId,
-          pile,
-        });
-      }
+    if (player) {
+      player.setPile(pile);
+      socket.broadcast.emit('set-other-pile', {
+        roomId,
+        playerId,
+        pile,
+      });
     }
   });
 
   socket.on('increase-score', ({ roomId, playerId, points }) => {
-    const room = rooms[roomId];
+    const player = getRoomPlayer({ roomId, playerId });
 
-    if (room) {
-      const player = room.players[playerId];
-
-      if (player) {
-        player.increaseScore(points);
-        if (points > 0) {
-          socket.broadcast.emit('set-penalty', {
-            roomId,
-            playerId,
-            penalty: points,
-          });
-        }
-        socket.broadcast.emit('set-other-score', {
+    if (player) {
+      player.increaseScore(points);
+      if (points > 0) {
+        socket.broadcast.emit('set-penalty', {
           roomId,
           playerId,
-          score: player.getScore(),
+          penalty: points,
         });
       }
+      socket.broadcast.emit('set-other-score', {
+        roomId,
+        playerId,
+        score: player.getScore(),
+      });
     }
   });
 
   socket.on('finish-game', ({ roomId, playerId }) => {
-    const room = rooms[roomId];
+    const player = getRoomPlayer({ roomId, playerId });
 
-    if (room) {
-      const player = room.players[playerId];
-
-      if (player) {
-        player.finishGame();
-        socket.broadcast.emit('set-other-game-finish', {
-          roomId,
-          playerId,
-        });
-      }
+    if (player) {
+      player.finishGame();
+      socket.broadcast.emit('set-other-game-finish', {
+        roomId,
+        playerId,
+      });
     }
   });
 
   socket.on('disconnect', () => {
     Object.keys(rooms).map(roomId => {
       const room = rooms[roomId];
-      const playerToRemove = room.players[socket.id];
+      const playerToRemove = getRoomPlayer({ roomId, playerId: socket.id });
 
       if (playerToRemove) {
         room.removePlayer(socket.id);

@@ -10,7 +10,7 @@ import {
   SET_OTHER_SCORE,
   SET_PENALTY,
   SET_TETRO,
-  UPDATE_MY_DATA,
+  UPDATE_MY_ID,
   SET_OTHER_GAME_FINISH,
   REMOVE_PLAYER,
 } from '../constants';
@@ -72,9 +72,9 @@ export const setTetro = tetro => ({
   payload: tetro,
 });
 
-export const updateMyData = myData => ({
-  type: UPDATE_MY_DATA,
-  payload: myData,
+export const updateMyId = myId => ({
+  type: UPDATE_MY_ID,
+  payload: myId,
 });
 
 export const removePlayer = ({ roomId, playerId }) => ({

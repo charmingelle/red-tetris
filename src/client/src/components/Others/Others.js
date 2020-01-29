@@ -70,7 +70,7 @@ const OthersInner = ({ myId, players }) => (
   </ul>
 );
 
-const mapStateToProps = ({ myData: { id: myId }, room: { players } }) => ({
+const mapStateToProps = ({ myId, players }) => ({
   myId,
   players,
 });

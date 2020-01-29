@@ -42,53 +42,66 @@ window.setInterval(() => store.dispatch(moveTetroDown()), 750);
 
 window.addEventListener('keydown', keyDownHandler);
 
-const startGame = (socket, room) => () =>
+const startGame = (socket, roomId) => () =>
   socket.emit('start-game', {
-    roomId: room.id,
+    roomId,
   });
 
-const renderStartGameButton = (socket, myData, room) =>
-  myData.id === room.leader && !room.game ? (
-    <button className="start-game-button" onClick={startGame(socket, room)}>
+const renderStartGameButton = (socket, myId, roomId, leader, roomGame) =>
+  myId === leader && !roomGame ? (
+    <button className="start-game-button" onClick={startGame(socket, roomId)}>
       START
     </button>
   ) : null;
 
-const renderGameDetails = (socket, myData, room) => (
+const renderGameDetails = (socket, myId, roomId, leader, roomGame) => (
   <div className="game-details">
-    {renderStartGameButton(socket, myData, room)}
+    {renderStartGameButton(socket, myId, roomId, leader, roomGame)}
     <Others />
   </div>
 );
 
 const renderGameOver = () => <div className="game-over">GAME OVER</div>;
 
-const renderField = (myData, game) => (
+const renderField = (myId, roomGame, score) => (
   <div className="field-container">
     <div className="field" tabIndex={0}>
-      <Tetromino />
-      <Pile />
-      <Penalty />
-      {game.isOver && renderGameOver()}
+      {roomGame && (
+        <>
+          <Tetromino />
+          <Pile />
+          <Penalty />
+          {roomGame.isOver && renderGameOver()}
+        </>
+      )}
     </div>
-    <div className="my-score">{`${myData.id}: ${game.score}`}</div>
+    <div className="my-score">{`${myId}: ${score}`}</div>
   </div>
 );
 
-const GameInner = ({ socket, myData, room, game }) => (
+const GameInner = ({ socket, myId, roomId, leader, roomGame, score }) => (
   <div className="room">
-    {renderField(myData, game)}
+    {renderField(myId, roomGame, score)}
     <div className="game-details-container">
-      {room && renderGameDetails(socket, myData, room)}
+      {roomId && renderGameDetails(socket, myId, roomId, leader, roomGame)}
     </div>
   </div>
 );
 
-const mapStateToProps = ({ socket, myData, room, game }) => ({
+const mapStateToProps = ({
   socket,
-  myData,
-  room,
-  game,
+  myId,
+  roomId,
+  leader,
+  roomGame,
+  game: { score },
+}) => ({
+  socket,
+  myId,
+  roomId,
+  leader,
+  roomGame,
+  score,
 });
 
 export const Game = connect(mapStateToProps)(GameInner);
