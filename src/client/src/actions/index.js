@@ -6,13 +6,8 @@ import {
   MOVE_TETRO,
   MOVE_TETRO_DOWN,
   ROTATE_TETR0,
-  SET_OTHER_PILE,
-  SET_OTHER_SCORE,
-  SET_PENALTY,
   SET_TETRO,
   UPDATE_MY_ID,
-  SET_OTHER_GAME_FINISH,
-  REMOVE_PLAYER,
 } from '../constants';
 
 export const changeShowLobby = showLobby => ({
@@ -47,26 +42,6 @@ export const rotateTetro = () => ({
   type: ROTATE_TETR0,
 });
 
-export const setOtherPile = ({ roomId, playerId, pile }) => ({
-  type: SET_OTHER_PILE,
-  payload: { roomId, playerId, pile },
-});
-
-export const setOtherScore = ({ roomId, playerId, score }) => ({
-  type: SET_OTHER_SCORE,
-  payload: { roomId, playerId, score },
-});
-
-export const setPenalty = ({ roomId, penalty }) => ({
-  type: SET_PENALTY,
-  payload: { roomId, penalty },
-});
-
-export const setOtherGameFinish = ({ roomId, playerId }) => ({
-  type: SET_OTHER_GAME_FINISH,
-  payload: { roomId, playerId },
-});
-
 export const setTetro = tetro => ({
   type: SET_TETRO,
   payload: tetro,
@@ -75,9 +50,4 @@ export const setTetro = tetro => ({
 export const updateMyId = myId => ({
   type: UPDATE_MY_ID,
   payload: myId,
-});
-
-export const removePlayer = ({ roomId, playerId }) => ({
-  type: REMOVE_PLAYER,
-  payload: { roomId, playerId },
 });

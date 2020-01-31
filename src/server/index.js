@@ -4,7 +4,6 @@ const post = 5000;
 const http = app.listen(post, () =>
   console.log(`Server is running on port ${5000}`),
 );
-const io = require('socket.io')(http);
 
 const LINE = [
   [0, 0, 1, 0],
@@ -79,7 +78,8 @@ const VIOLET = {
 };
 
 class Player {
-  constructor({ id }) {
+  constructor({ io, id }) {
+    this.io = io;
     this.id = id;
     this.pile = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -118,7 +118,7 @@ class Player {
     if (!this.isGameOver) {
       this.tetroIndex += 1;
       this.tetro = this.game.getTetro(this.tetroIndex);
-      io.to(this.id).emit('set-tetro', { tetro: this.tetro });
+      this.io.to(this.id).emit('set-tetro', { tetro: this.tetro });
     }
   }
 
@@ -128,6 +128,15 @@ class Player {
 
   increaseScore(points) {
     this.score += points;
+  }
+
+  receivePenalty(penalty) {
+    const newPile = JSON.parse(JSON.stringify(this.pile));
+
+    for (let i = 0; i < penalty; i++) {
+      newPile.shift(penalty);
+    }
+    this.pile = newPile;
   }
 
   finishGame() {
@@ -198,7 +207,8 @@ class Game {
 }
 
 class Room {
-  constructor({ id, name, leader, players = {} }) {
+  constructor({ io, id, name, leader, players = {} }) {
+    this.io = io;
     this.id = id;
     this.name = name;
     this.leader = leader;
@@ -207,7 +217,7 @@ class Room {
   }
 
   addPlayer(playerId) {
-    this.players[playerId] = new Player({ id: playerId });
+    this.players[playerId] = new Player({ io: this.io, id: playerId });
   }
 
   removePlayer(playerId) {
@@ -239,143 +249,187 @@ class Room {
   }
 }
 
-const rooms = {};
+class RedTetris {
+  constructor(io) {
+    this.io = io;
+    this.rooms = {};
 
-const getRoomPlayer = ({ roomId, playerId }) => {
-  const room = rooms[roomId];
+    io.use((socket, next) => {
+      console.log(socket.id, socket.request._query.login);
+      next();
+    });
 
-  if (room) {
-    const player = room.players[playerId];
+    io.on('connection', socket => {
+      this.sendId(socket);
+      this.sendRoomsToMe(socket);
 
-    if (player) {
-      return player;
-    }
+      socket.on('create-room', ({ name }) => this.createRoom(socket, name));
+      socket.on('join-room', ({ roomId }) => this.joinRoom(socket, roomId));
+      socket.on('start-game', ({ roomId }) => this.startGame(socket, roomId));
+      socket.on('get-tetro', ({ roomId, playerId }) =>
+        this.getTetro(roomId, playerId),
+      );
+      socket.on('set-pile', ({ roomId, playerId, pile }) =>
+        this.setPile(roomId, playerId, pile),
+      );
+      socket.on('increase-score', ({ roomId, playerId, points }) =>
+        this.increaseScore(roomId, playerId, points),
+      );
+      socket.on('finish-game', ({ roomId, playerId }) =>
+        this.finishGame(roomId, playerId),
+      );
+      socket.on('disconnect', () => this.disconnect(socket));
+    });
   }
-  return null;
-};
 
-io.use((socket, next) => {
-  console.log(socket.id, socket.request._query.login);
-  next();
-});
+  sendId(socket) {
+    this.io.to(socket.id).emit('send-id', {
+      id: socket.id,
+    });
+  }
 
-io.on('connection', socket => {
-  io.to(socket.id).emit('send-id', {
-    id: socket.id,
-  });
+  sendRoomsToMe(socket) {
+    this.io.to(socket.id).emit('update-rooms', {
+      rooms: Object.keys(this.rooms).map(id => ({
+        id,
+        ...this.rooms[id].getRoomData(),
+      })),
+    });
+  }
 
-  io.to(socket.id).emit('update-rooms', {
-    rooms: Object.keys(rooms).map(id => ({ id, ...rooms[id].getRoomData() })),
-  });
+  sendRooms() {
+    this.io.emit('update-rooms', {
+      rooms: Object.keys(this.rooms).map(id => ({
+        id,
+        ...this.rooms[id].getRoomData(),
+      })),
+    });
+  }
 
-  socket.on('start-game', ({ roomId }) => {
-    const room = rooms[roomId];
-
-    if (room && socket.id === room.leader) {
-      room.startGame();
-      Object.values(room.players).forEach(player => {
-        io.to(player.id).emit('update-room', {
-          room: rooms[roomId].getRoomData(),
-        });
-      });
-    }
-  });
-
-  socket.on('create-room', ({ name }) => {
-    const newRoomId = Object.keys(rooms).length
-      ? Math.max(...Object.keys(rooms).map(roomId => parseInt(roomId))) + 1 + ''
+  getNewRoomId() {
+    return Object.keys(this.rooms).length
+      ? Math.max(...Object.keys(this.rooms).map(roomId => parseInt(roomId))) +
+          1 +
+          ''
       : '0';
+  }
 
-    rooms[newRoomId] = new Room({
-      id: newRoomId,
+  sendRoom(roomId) {
+    this.io.to(roomId).emit('update-room', {
+      room: this.rooms[roomId].getRoomData(),
+    });
+  }
+
+  createRoom(socket, name) {
+    const roomId = this.getNewRoomId();
+
+    this.rooms[roomId] = new Room({
+      io: this.io,
+      id: roomId,
       name,
       leader: socket.id,
-      players: { [socket.id]: new Player({ id: socket.id }) },
+      players: {},
     });
-    io.to(socket.id).emit('send-room', {
-      room: rooms[newRoomId].getRoomData(),
-    });
-  });
+    this.sendRooms();
+  }
 
-  socket.on('join-room', ({ roomId }) => {
-    const room = rooms[roomId];
+  joinRoom(socket, roomId) {
+    const room = this.rooms[roomId];
 
     if (room) {
       room.addPlayer(socket.id);
-      io.to(socket.id).emit('send-room', {
-        room: rooms[roomId].getRoomData(),
-      });
-      socket.broadcast.emit('update-room', {
-        room: rooms[roomId].getRoomData(),
-      });
+      socket.join(roomId);
+      this.sendRoom(roomId);
     }
-  });
+  }
 
-  socket.on('get-tetro', ({ roomId, playerId }) => {
-    const player = getRoomPlayer({ roomId, playerId });
+  deleteRoom(roomId) {
+    delete this.rooms[roomId];
+    this.sendRooms();
+  }
+
+  startGame(socket, roomId) {
+    const room = this.rooms[roomId];
+
+    if (room && socket.id === room.leader) {
+      room.startGame();
+      this.sendRoom(roomId);
+    }
+  }
+
+  getRoomPlayer({ roomId, playerId }) {
+    const room = this.rooms[roomId];
+
+    if (room) {
+      const player = room.players[playerId];
+
+      if (player) {
+        return player;
+      }
+    }
+    return null;
+  }
+
+  getTetro(roomId, playerId) {
+    const player = this.getRoomPlayer({ roomId, playerId });
 
     if (player) {
       player.setTetro();
     }
-  });
+  }
 
-  socket.on('set-pile', ({ roomId, playerId, pile }) => {
-    const player = getRoomPlayer({ roomId, playerId });
+  setPile(roomId, playerId, pile) {
+    const player = this.getRoomPlayer({ roomId, playerId });
 
     if (player) {
       player.setPile(pile);
-      socket.broadcast.emit('set-other-pile', {
-        roomId,
-        playerId,
-        pile,
-      });
+      this.sendRoom(roomId);
     }
-  });
+  }
 
-  socket.on('increase-score', ({ roomId, playerId, points }) => {
-    const player = getRoomPlayer({ roomId, playerId });
+  increaseScore(roomId, playerId, points) {
+    const player = this.getRoomPlayer({ roomId, playerId });
 
     if (player) {
-      player.increaseScore(points);
-      if (points > 0) {
-        socket.broadcast.emit('set-penalty', {
-          roomId,
-          playerId,
-          penalty: points,
-        });
-      }
-      socket.broadcast.emit('set-other-score', {
-        roomId,
-        playerId,
-        score: player.getScore(),
-      });
-    }
-  });
+      const otherPlayerIds = Object.keys(this.rooms[roomId].players).filter(
+        id => id !== playerId,
+      );
 
-  socket.on('finish-game', ({ roomId, playerId }) => {
-    const player = getRoomPlayer({ roomId, playerId });
+      player.increaseScore(points);
+      otherPlayerIds.forEach(id =>
+        this.rooms[roomId].players[id].receivePenalty(points),
+      );
+      this.sendRoom(roomId);
+    }
+  }
+
+  finishGame(roomId, playerId) {
+    const player = this.getRoomPlayer({ roomId, playerId });
 
     if (player) {
       player.finishGame();
-      socket.broadcast.emit('set-other-game-finish', {
-        roomId,
-        playerId,
-      });
+      this.sendRoom(roomId);
     }
-  });
+  }
 
-  socket.on('disconnect', () => {
-    Object.keys(rooms).map(roomId => {
-      const room = rooms[roomId];
-      const playerToRemove = getRoomPlayer({ roomId, playerId: socket.id });
+  disconnect(socket) {
+    Object.keys(this.rooms).map(roomId => {
+      const room = this.rooms[roomId];
+      const playerToRemove = this.getRoomPlayer({
+        roomId,
+        playerId: socket.id,
+      });
 
       if (playerToRemove) {
         room.removePlayer(socket.id);
-        socket.broadcast.emit('remove-player', {
-          roomId,
-          playerId: playerToRemove.id,
-        });
+        socket.leave(roomId);
+        this.sendRoom(roomId);
+        if (!Object.keys(room.players).length) {
+          this.deleteRoom(roomId);
+        }
       }
     });
-  });
-});
+  }
+}
+
+new RedTetris(require('socket.io')(http));

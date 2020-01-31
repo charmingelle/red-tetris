@@ -9,25 +9,10 @@ import {
   DROP_TETRO,
   ROTATE_TETR0,
   RIGHT_LIMIT,
-  SET_OTHER_PILE,
-  SET_OTHER_SCORE,
-  SET_PENALTY,
-  SET_OTHER_GAME_FINISH,
-  REMOVE_PLAYER,
 } from '../constants';
 import socketIOClient from 'socket.io-client';
 import { store } from '../index';
-import {
-  loadRooms,
-  loadRoom,
-  updateMyId,
-  setTetro,
-  setOtherPile,
-  setOtherScore,
-  setPenalty,
-  setOtherGameFinish,
-  removePlayer,
-} from '../actions';
+import { loadRooms, loadRoom, updateMyId, setTetro } from '../actions';
 
 const login = 'user';
 
@@ -37,33 +22,11 @@ export const io = socketIOClient({
 
 io.on('update-rooms', ({ rooms }) => store.dispatch(loadRooms(rooms)));
 
-io.on('send-room', ({ room }) => store.dispatch(loadRoom(room)));
-
 io.on('send-id', ({ id }) => store.dispatch(updateMyId(id)));
 
 io.on('update-room', ({ room }) => store.dispatch(loadRoom(room)));
 
 io.on('set-tetro', ({ tetro }) => store.dispatch(setTetro(tetro)));
-
-io.on('set-other-pile', ({ roomId, playerId, pile }) =>
-  store.dispatch(setOtherPile({ roomId, playerId, pile })),
-);
-
-io.on('set-other-score', ({ roomId, playerId, score }) =>
-  store.dispatch(setOtherScore({ roomId, playerId, score })),
-);
-
-io.on('set-penalty', ({ roomId, penalty }) =>
-  store.dispatch(setPenalty({ roomId, penalty })),
-);
-
-io.on('set-other-game-finish', ({ roomId, playerId }) =>
-  store.dispatch(setOtherGameFinish({ roomId, playerId })),
-);
-
-io.on('remove-player', ({ roomId, playerId }) =>
-  store.dispatch(removePlayer({ roomId, playerId })),
-);
 
 const initialPile = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -446,81 +409,6 @@ export const allReducers = (state = initialState, action) => {
             },
           };
         }
-      }
-      return state;
-    }
-    case SET_OTHER_PILE: {
-      const { roomId, playerId, pile } = action.payload;
-
-      if (roomId === state.roomId) {
-        const players = JSON.parse(JSON.stringify(state.players));
-
-        players[playerId].pile = pile;
-        return {
-          ...state,
-          players,
-        };
-      }
-      return state;
-    }
-    case SET_OTHER_SCORE: {
-      const { roomId, playerId, score } = action.payload;
-
-      if (roomId === state.roomId) {
-        const players = JSON.parse(JSON.stringify(state.players));
-
-        players[playerId].score = score;
-        return {
-          ...state,
-          players,
-        };
-      }
-      return state;
-    }
-    case SET_PENALTY: {
-      const { roomId, penalty } = action.payload;
-
-      if (roomId === state.roomId) {
-        const newPile = JSON.parse(JSON.stringify(state.game.pile));
-
-        for (let i = 0; i < penalty; i++) {
-          newPile.shift(penalty);
-        }
-        return {
-          ...state,
-          game: {
-            ...state.game,
-            pile: newPile,
-          },
-        };
-      }
-      return state;
-    }
-    case SET_OTHER_GAME_FINISH: {
-      const { roomId, playerId } = action.payload;
-
-      if (roomId === state.roomId) {
-        const players = JSON.parse(JSON.stringify(state.players));
-
-        players[playerId].isGameOver = true;
-        return {
-          ...state,
-          players,
-        };
-      }
-      return state;
-    }
-    case REMOVE_PLAYER: {
-      const { roomId, playerId } = action.payload;
-
-      if (roomId === state.roomId) {
-        const players = JSON.parse(JSON.stringify(state.players));
-
-        delete players[playerId];
-        return {
-          ...state,
-          players,
-        };
       }
       return state;
     }
