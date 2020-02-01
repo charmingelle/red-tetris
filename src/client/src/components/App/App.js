@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Lobby } from '../Lobby';
-import { Game } from '../Game';
+import { Room } from '../Room';
 
-const AppInner = ({ showLobby }) => (showLobby ? <Lobby /> : <Game />);
+const AppInner = ({ showRoom }) => (showRoom ? <Room /> : <Lobby />);
 
-const mapStateToProps = ({ showLobby }) => ({ showLobby });
+const mapStateToProps = ({ myRoomId }) => ({ showRoom: myRoomId !== null });
 
 export const App = connect(mapStateToProps)(AppInner);

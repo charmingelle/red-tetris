@@ -70,9 +70,9 @@ const OthersInner = ({ myId, players }) => (
   </ul>
 );
 
-const mapStateToProps = ({ myId, players }) => ({
+const mapStateToProps = ({ myId, myRoomId, rooms }) => ({
   myId,
-  players,
+  players: rooms[myRoomId].players,
 });
 
 export const Others = connect(mapStateToProps)(OthersInner);

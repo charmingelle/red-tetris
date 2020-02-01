@@ -1,26 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import './Lobby.css';
-import { changeShowLobby } from '../../actions';
 
 let newRoomName = null;
 
-const joinRoom = (socket, changeShowLobby, id) => () => {
-  socket.emit('join-room', { roomId: id });
-  changeShowLobby(false);
-};
-
-const renderRooms = (rooms, socket, changeShowLobby) =>
-  rooms.length
-    ? rooms.map(({ id, name, game }) => (
-        <button
-          className="room-button"
-          key={id}
-          disabled={game !== null}
-          onClick={joinRoom(socket, changeShowLobby, id)}
-        >{`Join Room ${name}`}</button>
-      ))
-    : null;
+const joinRoom = (socket, id) => () => socket.emit('join-room', { roomId: id });
 
 const createRoom = socket => () => {
   if (newRoomName) {
@@ -30,7 +14,19 @@ const createRoom = socket => () => {
 
 const changeNewRoomName = ({ target: { value } }) => (newRoomName = value);
 
-const renderCreateRoomForm = socket => (
+const RoomList = ({ rooms, socket }) =>
+  Object.values(rooms).length
+    ? Object.values(rooms).map(({ id, name, game }) => (
+        <button
+          className="room-button"
+          key={id}
+          disabled={game !== null}
+          onClick={joinRoom(socket, id)}
+        >{`Join Room ${name}`}</button>
+      ))
+    : null;
+
+const CreateRoomForm = ({ socket }) => (
   <div>
     <label htmlFor="room-name">Create own room:</label>
     <input
@@ -46,15 +42,13 @@ const renderCreateRoomForm = socket => (
   </div>
 );
 
-export const LobbyInner = ({ rooms, socket, changeShowLobby }) => (
+export const LobbyInner = ({ rooms, socket }) => (
   <div className="lobby">
-    {renderCreateRoomForm(socket)}
-    {renderRooms(rooms, socket, changeShowLobby)}
+    <CreateRoomForm socket={socket} />
+    <RoomList rooms={rooms} socket={socket} />
   </div>
 );
 
 const mapStateToProps = ({ rooms, socket }) => ({ rooms, socket });
 
-const mapDispatchToProps = { changeShowLobby };
-
-export const Lobby = connect(mapStateToProps, mapDispatchToProps)(LobbyInner);
+export const Lobby = connect(mapStateToProps)(LobbyInner);

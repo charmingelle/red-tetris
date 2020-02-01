@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import './Game.css';
+import './Room.css';
 import { Tetromino } from '../Tetromino';
 import {
   moveTetro,
@@ -42,66 +42,74 @@ window.setInterval(() => store.dispatch(moveTetroDown()), 750);
 
 window.addEventListener('keydown', keyDownHandler);
 
-const startGame = (socket, roomId) => () =>
+const startGame = (socket, roomId) => () => {
   socket.emit('start-game', {
     roomId,
   });
+};
 
-const renderStartGameButton = (socket, myId, roomId, leader, roomGame) =>
-  myId === leader && !roomGame ? (
+const StartGameButton = ({ socket, myId, roomId, leader, game }) =>
+  myId === leader && !game ? (
     <button className="start-game-button" onClick={startGame(socket, roomId)}>
       START
     </button>
   ) : null;
 
-const renderGameDetails = (socket, myId, roomId, leader, roomGame) => (
-  <div className="game-details">
-    {renderStartGameButton(socket, myId, roomId, leader, roomGame)}
-    <Others />
-  </div>
-);
+const GameDetails = ({ socket, myId, roomId, leader, game }) =>
+  roomId ? (
+    <div className="game-details">
+      <StartGameButton
+        socket={socket}
+        myId={myId}
+        roomId={roomId}
+        leader={leader}
+        game={game}
+      />
+      <Others />
+    </div>
+  ) : null;
 
-const renderGameOver = () => <div className="game-over">GAME OVER</div>;
+const Game = ({ game }) =>
+  game ? (
+    <>
+      <Tetromino />
+      <Pile />
+      <Penalty />
+      {game.isOver && <div className="game-over">GAME OVER</div>}
+    </>
+  ) : null;
 
-const renderField = (myId, roomGame, score) => (
+const Field = ({ myId, game, score }) => (
   <div className="field-container">
     <div className="field" tabIndex={0}>
-      {roomGame && (
-        <>
-          <Tetromino />
-          <Pile />
-          <Penalty />
-          {roomGame.isOver && renderGameOver()}
-        </>
-      )}
+      <Game game={game} />
     </div>
     <div className="my-score">{`${myId}: ${score}`}</div>
   </div>
 );
 
-const GameInner = ({ socket, myId, roomId, leader, roomGame, score }) => (
+const RoomInner = ({ socket, myId, roomId, leader, game, score }) => (
   <div className="room">
-    {renderField(myId, roomGame, score)}
+    <Field myId={myId} game={game} score={score} />
     <div className="game-details-container">
-      {roomId && renderGameDetails(socket, myId, roomId, leader, roomGame)}
+      <GameDetails
+        socket={socket}
+        myId={myId}
+        roomId={roomId}
+        leader={leader}
+        game={game}
+      />
     </div>
   </div>
 );
 
-const mapStateToProps = ({
+const mapStateToProps = ({ socket, myId, myRoomId, rooms }) => ({
   socket,
   myId,
-  roomId,
-  leader,
-  roomGame,
-  game: { score },
-}) => ({
-  socket,
-  myId,
-  roomId,
-  leader,
-  roomGame,
-  score,
+  roomId: myRoomId,
+  leader: rooms[myRoomId].leader,
+  game: rooms[myRoomId].game,
+  score: rooms[myRoomId].players[myId].score,
 });
 
-export const Game = connect(mapStateToProps)(GameInner);
+export const Room = connect(mapStateToProps)(RoomInner);

@@ -4,7 +4,6 @@ export const DOWN = 'ArrowDown';
 export const UP = 'ArrowUp';
 
 export const UPDATE_MY_ID = 'UPDATE_MY_ID';
-export const CHANGE_SHOW_LOBBY = 'CHANGE_SHOW_LOBBY';
 export const LOAD_ROOMS = 'LOAD_ROOMS';
 export const LOAD_ROOM = 'LOAD_ROOM';
 export const SET_TETRO = 'SET_TETRO';

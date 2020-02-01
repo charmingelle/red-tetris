@@ -2,7 +2,6 @@ import {
   UPDATE_MY_ID,
   LOAD_ROOM,
   LOAD_ROOMS,
-  CHANGE_SHOW_LOBBY,
   SET_TETRO,
   MOVE_TETRO,
   MOVE_TETRO_DOWN,
@@ -28,45 +27,12 @@ io.on('update-room', ({ room }) => store.dispatch(loadRoom(room)));
 
 io.on('set-tetro', ({ tetro }) => store.dispatch(setTetro(tetro)));
 
-const initialPile = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
-
 const initialState = {
-  showLobby: true,
-  myId: null,
-  rooms: [],
   socket: io,
-  roomId: null,
-  roomName: null,
-  leader: null,
-  players: {},
-  roomGame: null,
-  game: {
-    pile: initialPile,
-    tetro: null,
-    score: 0,
-    isOver: false,
-  },
+  myId: null,
+  myRoomId: null,
+  rooms: {},
+  tetro: null,
 };
 
 const wasPileHit = (figure, row, col, pile) => {
@@ -88,7 +54,7 @@ const wasPileHit = (figure, row, col, pile) => {
   return false;
 };
 
-const isTetroInsideField = (pile, figure, row, col) => {
+const isTetroInsideField = (figure, row, col, pile) => {
   for (let rowIndex = 0; rowIndex < figure.length; rowIndex++) {
     for (let colIndex = 0; colIndex < figure[rowIndex].length; colIndex++) {
       const elRow = rowIndex + row;
@@ -104,6 +70,10 @@ const isTetroInsideField = (pile, figure, row, col) => {
   }
   return true;
 };
+
+const cannotMoveTetro = (figure, row, col, pile) =>
+  !isTetroInsideField(figure, row, col, pile) ||
+  wasPileHit(figure, row, col, pile);
 
 const transposeMatrix = figure => {
   const figureSize = figure.length;
@@ -139,7 +109,7 @@ const getRotatedFigure = figure => {
   return rotatedFigure;
 };
 
-const getPileWithRemovedRows = (pile, socket, roomId, playerId) => {
+const removeRows = (pile, state) => {
   const newPile = JSON.parse(JSON.stringify(pile));
   let points = 0;
 
@@ -151,8 +121,8 @@ const getPileWithRemovedRows = (pile, socket, roomId, playerId) => {
       points++;
     }
   }
-  increaseMyScore(socket, roomId, playerId, points);
-  return { newPile, points };
+  increaseMyScore(points, state);
+  setMyPile(newPile, state);
 };
 
 const getPileWithDropedTetro = (tetro, pile) => {
@@ -175,7 +145,7 @@ const getPileWithDropedTetro = (tetro, pile) => {
   return pile;
 };
 
-const getPileWithTetro = (pile, tetro) => {
+const getPileWithTetro = (tetro, pile) => {
   const { figure, row, col, color } = tetro;
   const newPile = JSON.parse(JSON.stringify(pile));
 
@@ -189,23 +159,23 @@ const getPileWithTetro = (pile, tetro) => {
   return newPile;
 };
 
-const getNewTetro = state =>
-  state.socket.emit('get-tetro', {
-    roomId: state.roomId,
-    playerId: state.myId,
+const getNewTetro = ({ socket, myRoomId, myId }) =>
+  socket.emit('get-tetro', {
+    roomId: myRoomId,
+    playerId: myId,
   });
 
-const setMyPile = (socket, roomId, playerId, pile) =>
+const setMyPile = (pile, { socket, myRoomId, myId }) =>
   socket.emit('set-pile', {
-    roomId,
-    playerId,
+    roomId: myRoomId,
+    playerId: myId,
     pile,
   });
 
-const increaseMyScore = (socket, roomId, playerId, points) =>
+const increaseMyScore = (points, { socket, myRoomId, myId }) =>
   socket.emit('increase-score', {
-    roomId,
-    playerId,
+    roomId: myRoomId,
+    playerId: myId,
     points,
   });
 
@@ -222,195 +192,107 @@ const isGameOver = (newTetro, pile) => {
   return false;
 };
 
-const finishGame = (socket, roomId, playerId) =>
+const finishGame = ({ socket, roomId, playerId }) =>
   socket.emit('finish-game', {
     roomId,
     playerId,
   });
 
-export const allReducers = (state = initialState, action) => {
-  switch (action.type) {
+const getMyPile = state => state.rooms[state.myRoomId].players[state.myId].pile;
+
+export const allReducers = (state = initialState, { type, payload }) => {
+  switch (type) {
     case LOAD_ROOM: {
-      const { id, name, leader, players, game } = action.payload;
+      const room = payload;
 
       return {
         ...state,
-        roomId: id,
-        roomName: name,
-        leader,
-        players,
-        roomGame: game,
+        rooms: { ...state.room, [room.id]: room },
+        myRoomId: room.id,
       };
     }
     case UPDATE_MY_ID: {
-      return { ...state, myId: action.payload };
+      return { ...state, myId: payload };
     }
     case LOAD_ROOMS: {
-      return { ...state, rooms: action.payload };
-    }
-    case CHANGE_SHOW_LOBBY: {
-      return { ...state, showLobby: action.payload };
+      return { ...state, rooms: payload };
     }
     case SET_TETRO: {
-      if (isGameOver(action.payload, state.game.pile)) {
-        finishGame(state.socket, state.roomId, state.myId);
-        return {
-          ...state,
-          game: {
-            ...state.game,
-            tetro: action.payload,
-            pile: state.game.pile,
-            isOver: true,
-          },
-        };
+      const tetro = payload;
+      const pile = getMyPile(state);
+
+      if (isGameOver(tetro, pile)) {
+        finishGame(state);
+        return state;
+      }
+      return { ...state, tetro };
+    }
+    case MOVE_TETRO: {
+      const { tetro } = state;
+
+      if (!tetro) {
+        return state;
+      }
+      const { top, left } = payload;
+      const newRow = tetro.row + top;
+      const newCol = tetro.col + left;
+      const pile = getMyPile(state);
+
+      if (cannotMoveTetro(tetro.figure, newRow, newCol, pile)) {
+        return state;
       }
       return {
         ...state,
-        game: {
-          ...state.game,
-          tetro: action.payload,
-        },
+        tetro: { ...tetro, row: newRow, col: newCol },
       };
     }
-    case MOVE_TETRO: {
-      if (state.game.tetro) {
-        const newRow = state.game.tetro.row + action.payload.top;
-        const newCol = state.game.tetro.col + action.payload.left;
-
-        if (
-          !isTetroInsideField(
-            state.game.pile,
-            state.game.tetro.figure,
-            newRow,
-            newCol,
-          )
-        ) {
-          return state;
-        }
-        if (
-          wasPileHit(state.game.tetro.figure, newRow, newCol, state.game.pile)
-        ) {
-          return state;
-        }
-        return {
-          ...state,
-          game: {
-            ...state.game,
-            tetro: {
-              figure: state.game.tetro.figure,
-              row: newRow,
-              col: newCol,
-              color: state.game.tetro.color,
-            },
-          },
-        };
-      }
-      return state;
-    }
     case DROP_TETRO: {
-      if (state.game.tetro) {
-        const { newPile, points } = getPileWithRemovedRows(
-          getPileWithDropedTetro(state.game.tetro, state.game.pile),
-          state.socket,
-          state.roomId,
-          state.myId,
-        );
+      const { tetro } = state;
 
-        getNewTetro(state);
-        setMyPile(state.socket, state.roomId, state.myId, newPile);
-        return {
-          ...state,
-          game: {
-            ...state.game,
-            pile: newPile,
-            score: state.game.score + points,
-          },
-        };
+      if (!tetro) {
+        return state;
       }
+      const pile = getMyPile(state);
+
+      removeRows(getPileWithDropedTetro(tetro, pile), state);
+      getNewTetro(state);
       return state;
     }
     case ROTATE_TETR0: {
-      if (state.game.tetro) {
-        const rotatedFigure = getRotatedFigure(state.game.tetro.figure);
+      const { tetro } = state;
 
-        if (
-          !isTetroInsideField(
-            state.game.pile,
-            rotatedFigure,
-            state.game.tetro.row,
-            state.game.tetro.col,
-          )
-        ) {
-          return state;
-        }
-        if (
-          wasPileHit(
-            rotatedFigure,
-            state.game.tetro.row,
-            state.game.tetro.col,
-            state.game.pile,
-          )
-        ) {
-          return state;
-        }
-        return {
-          ...state,
-          game: {
-            ...state.game,
-            tetro: {
-              ...state.game.tetro,
-              figure: rotatedFigure,
-            },
-          },
-        };
+      if (!tetro) {
+        return state;
       }
-      return state;
+      const rotatedFigure = getRotatedFigure(tetro.figure);
+      const pile = getMyPile(state);
+
+      if (cannotMoveTetro(rotatedFigure, tetro.row, tetro.col, pile)) {
+        return state;
+      }
+      return {
+        ...state,
+        tetro: { ...tetro, figure: rotatedFigure },
+      };
     }
     case MOVE_TETRO_DOWN: {
-      if (state.game.tetro) {
-        const newRow = state.game.tetro.row + 1;
+      const { tetro } = state;
 
-        if (
-          wasPileHit(
-            state.game.tetro.figure,
-            newRow,
-            state.game.tetro.col,
-            state.game.pile,
-          )
-        ) {
-          const { newPile, points } = getPileWithRemovedRows(
-            getPileWithTetro(state.game.pile, state.game.tetro),
-            state.socket,
-            state.roomId,
-            state.myId,
-          );
-
-          getNewTetro(state);
-          setMyPile(state.socket, state.roomId, state.myId, newPile);
-          return {
-            ...state,
-            game: {
-              ...state.game,
-              pile: newPile,
-              score: state.game.score + points,
-            },
-          };
-        } else {
-          return {
-            ...state,
-            game: {
-              ...state.game,
-              tetro: {
-                figure: state.game.tetro.figure,
-                row: newRow,
-                col: state.game.tetro.col,
-                color: state.game.tetro.color,
-              },
-            },
-          };
-        }
+      if (!tetro) {
+        return state;
       }
-      return state;
+      const pile = getMyPile(state);
+      const newRow = tetro.row + 1;
+
+      if (wasPileHit(tetro.figure, newRow, tetro.col, pile)) {
+        removeRows(getPileWithTetro(tetro, pile), state);
+        getNewTetro(state);
+        return state;
+      }
+      return {
+        ...state,
+        tetro: { ...tetro, row: newRow },
+      };
     }
     default: {
       return state;

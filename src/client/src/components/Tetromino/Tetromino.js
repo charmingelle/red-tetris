@@ -28,6 +28,6 @@ export const TetrominoInner = ({ tetro }) => {
   return null;
 };
 
-const mapStateToProps = ({ game: { tetro } }) => ({ tetro });
+const mapStateToProps = ({ tetro }) => ({ tetro });
 
 export const Tetromino = connect(mapStateToProps)(TetrominoInner);

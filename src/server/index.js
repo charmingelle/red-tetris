@@ -288,21 +288,24 @@ class RedTetris {
     });
   }
 
+  getClientRooms() {
+    const clientRooms = {};
+
+    Object.keys(this.rooms).forEach(
+      roomId => (clientRooms[roomId] = this.rooms[roomId].getRoomData()),
+    );
+    return clientRooms;
+  }
+
   sendRoomsToMe(socket) {
     this.io.to(socket.id).emit('update-rooms', {
-      rooms: Object.keys(this.rooms).map(id => ({
-        id,
-        ...this.rooms[id].getRoomData(),
-      })),
+      rooms: this.getClientRooms(),
     });
   }
 
   sendRooms() {
     this.io.emit('update-rooms', {
-      rooms: Object.keys(this.rooms).map(id => ({
-        id,
-        ...this.rooms[id].getRoomData(),
-      })),
+      rooms: this.getClientRooms(),
     });
   }
 
@@ -340,6 +343,7 @@ class RedTetris {
       room.addPlayer(socket.id);
       socket.join(roomId);
       this.sendRoom(roomId);
+      this.sendRooms();
     }
   }
 

@@ -1,5 +1,4 @@
 import {
-  CHANGE_SHOW_LOBBY,
   DROP_TETRO,
   LOAD_ROOM,
   LOAD_ROOMS,
@@ -9,11 +8,6 @@ import {
   SET_TETRO,
   UPDATE_MY_ID,
 } from '../constants';
-
-export const changeShowLobby = showLobby => ({
-  type: CHANGE_SHOW_LOBBY,
-  payload: showLobby,
-});
 
 export const dropTetro = () => ({
   type: DROP_TETRO,
