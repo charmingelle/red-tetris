@@ -79,18 +79,18 @@ const Game = ({ game }) =>
     </>
   ) : null;
 
-const Field = ({ myId, game, score }) => (
+const Field = ({ myName, game, score }) => (
   <div className="field-container">
     <div className="field" tabIndex={0}>
       <Game game={game} />
     </div>
-    <div className="my-score">{`${myId}: ${score}`}</div>
+    <div className="my-score">{`${myName}: ${score}`}</div>
   </div>
 );
 
-const RoomInner = ({ socket, myId, roomId, leader, game, score }) => (
+const RoomInner = ({ socket, myId, roomId, myName, leader, game, score }) => (
   <div className="room">
-    <Field myId={myId} game={game} score={score} />
+    <Field myName={myName} game={game} score={score} />
     <div className="game-details-container">
       <GameDetails
         socket={socket}
@@ -103,10 +103,11 @@ const RoomInner = ({ socket, myId, roomId, leader, game, score }) => (
   </div>
 );
 
-const mapStateToProps = ({ socket, myId, myRoomId, rooms }) => ({
+const mapStateToProps = ({ socket, myId, myRoomId, myName, rooms }) => ({
   socket,
   myId,
   roomId: myRoomId,
+  myName,
   leader: rooms[myRoomId].leader,
   game: rooms[myRoomId].game,
   score: rooms[myRoomId].players[myId].score,

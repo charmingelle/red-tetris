@@ -1,0 +1,43 @@
+.create-room-form {
+  width: 315px;
+  display: flex;
+  flex-direction: column;
+}
+
+.create-room-label {
+  margin-bottom: 10px;
+  font-size: 36px;
+  color: #f9f9f9;
+}
+
+.create-room-input {
+  height: 45px;
+  margin-bottom: 10px;
+  border: 5px solid;
+  border-left-color: #b804e6;
+  border-top-color: #b804e6;
+  border-right-color: #660099;
+  border-bottom-color: #660099;
+  font-size: 36px;
+}
+
+.create-room-input:focus {
+  outline: none;
+}
+
+.create-room-button {
+  background-color: #9901cc;
+  border: 5px solid;
+  border-left-color: #b804e6;
+  border-top-color: #b804e6;
+  border-right-color: #660099;
+  border-bottom-color: #660099;
+  color: #fff;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.create-room-button:focus {
+  outline: none;
+}

@@ -1,5 +1,6 @@
 import {
   DROP_TETRO,
+  LOAD_PEOPLE,
   LOAD_ROOM,
   LOAD_ROOMS,
   MOVE_TETRO,
@@ -11,6 +12,11 @@ import {
 
 export const dropTetro = () => ({
   type: DROP_TETRO,
+});
+
+export const loadPeople = people => ({
+  type: LOAD_PEOPLE,
+  payload: people,
 });
 
 export const loadRoom = room => ({

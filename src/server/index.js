@@ -78,9 +78,10 @@ const VIOLET = {
 };
 
 class Player {
-  constructor({ io, id }) {
+  constructor({ io, id, name }) {
     this.io = io;
     this.id = id;
+    this.name = name;
     this.pile = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -150,6 +151,7 @@ class Player {
   getPlayerData() {
     return {
       id: this.id,
+      name: this.name,
       pile: this.pile,
       tetro: this.tetro,
       score: this.score,
@@ -216,8 +218,12 @@ class Room {
     this.game = null;
   }
 
-  addPlayer(playerId) {
-    this.players[playerId] = new Player({ io: this.io, id: playerId });
+  addPlayer(playerId, playerName) {
+    this.players[playerId] = new Player({
+      io: this.io,
+      id: playerId,
+      name: playerName,
+    });
   }
 
   removePlayer(playerId) {
@@ -253,6 +259,7 @@ class RedTetris {
   constructor(io) {
     this.io = io;
     this.rooms = {};
+    this.people = {};
 
     io.use((socket, next) => {
       console.log(socket.id, socket.request._query.login);
@@ -263,6 +270,7 @@ class RedTetris {
       this.sendId(socket);
       this.sendRoomsToMe(socket);
 
+      socket.on('set-name', ({ name }) => this.addPerson(socket, name));
       socket.on('create-room', ({ name }) => this.createRoom(socket, name));
       socket.on('join-room', ({ roomId }) => this.joinRoom(socket, roomId));
       socket.on('start-game', ({ roomId }) => this.startGame(socket, roomId));
@@ -280,6 +288,16 @@ class RedTetris {
       );
       socket.on('disconnect', () => this.disconnect(socket));
     });
+  }
+
+  addPerson(socket, name) {
+    this.people[socket.id] = name;
+    this.sendPeople();
+  }
+
+  deletePerson(socket) {
+    delete this.people[socket.id];
+    this.sendPeople();
   }
 
   sendId(socket) {
@@ -300,6 +318,12 @@ class RedTetris {
   sendRoomsToMe(socket) {
     this.io.to(socket.id).emit('update-rooms', {
       rooms: this.getClientRooms(),
+    });
+  }
+
+  sendPeople() {
+    this.io.emit('update-people', {
+      people: this.people,
     });
   }
 
@@ -340,7 +364,7 @@ class RedTetris {
     const room = this.rooms[roomId];
 
     if (room) {
-      room.addPlayer(socket.id);
+      room.addPlayer(socket.id, this.people[socket.id]);
       socket.join(roomId);
       this.sendRoom(roomId);
       this.sendRooms();
@@ -418,6 +442,7 @@ class RedTetris {
   }
 
   disconnect(socket) {
+    this.deletePerson(socket);
     Object.keys(this.rooms).map(roomId => {
       const room = this.rooms[roomId];
       const playerToRemove = this.getRoomPlayer({

@@ -1,5 +1,6 @@
 import {
   UPDATE_MY_ID,
+  LOAD_PEOPLE,
   LOAD_ROOM,
   LOAD_ROOMS,
   SET_TETRO,
@@ -11,13 +12,21 @@ import {
 } from '../constants';
 import socketIOClient from 'socket.io-client';
 import { store } from '../index';
-import { loadRooms, loadRoom, updateMyId, setTetro } from '../actions';
+import {
+  loadPeople,
+  loadRooms,
+  loadRoom,
+  updateMyId,
+  setTetro,
+} from '../actions';
 
 const login = 'user';
 
 export const io = socketIOClient({
   query: `login=${login}`,
 });
+
+io.on('update-people', ({ people }) => store.dispatch(loadPeople(people)));
 
 io.on('update-rooms', ({ rooms }) => store.dispatch(loadRooms(rooms)));
 
@@ -31,6 +40,8 @@ const initialState = {
   socket: io,
   myId: null,
   myRoomId: null,
+  myName: null,
+  people: {},
   rooms: {},
   tetro: null,
 };
@@ -202,6 +213,21 @@ const getMyPile = state => state.rooms[state.myRoomId].players[state.myId].pile;
 
 export const allReducers = (state = initialState, { type, payload }) => {
   switch (type) {
+    case UPDATE_MY_ID: {
+      return { ...state, myId: payload };
+    }
+    case LOAD_PEOPLE: {
+      const people = payload;
+
+      return {
+        ...state,
+        people,
+        myName: people[state.myId],
+      };
+    }
+    case LOAD_ROOMS: {
+      return { ...state, rooms: payload };
+    }
     case LOAD_ROOM: {
       const room = payload;
 
@@ -210,12 +236,6 @@ export const allReducers = (state = initialState, { type, payload }) => {
         rooms: { ...state.room, [room.id]: room },
         myRoomId: room.id,
       };
-    }
-    case UPDATE_MY_ID: {
-      return { ...state, myId: payload };
-    }
-    case LOAD_ROOMS: {
-      return { ...state, rooms: payload };
     }
     case SET_TETRO: {
       const tetro = payload;

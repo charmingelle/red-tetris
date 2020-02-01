@@ -14,9 +14,20 @@
   background-color: #666666;
 }
 
-.no-rooms-label {
-  margin: 20px;
-  line-height: 55px;
+.lobby-right {
+  width: 30%;
+  height: 100vh;
+  background-color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.enter-name-form-container {
+  margin-bottom: 50px;
+}
+
+.name-label {
   font-size: 36px;
   color: #f9f9f9;
 }
@@ -27,6 +38,13 @@
   outline: 5px solid #f9f9f9;
   background-color: black;
   overflow: scroll;
+}
+
+.no-rooms-label {
+  margin: 20px;
+  line-height: 55px;
+  font-size: 36px;
+  color: #f9f9f9;
 }
 
 .room-item {
@@ -72,58 +90,6 @@
   font-size: 30px;
   font-weight: bold;
   padding: 0 10px;
-}
-
-.lobby-right {
-  width: 30%;
-  height: 100vh;
-  background-color: #333;
-  display: flex;
-  justify-content: center;
-}
-
-.create-room-form {
-  width: 72%;
-  display: flex;
-  flex-direction: column;
-}
-
-.create-room-label {
-  margin-bottom: 10px;
-  font-size: 36px;
-  color: #f9f9f9;
-}
-
-.create-room-input {
-  height: 45px;
-  margin-bottom: 10px;
-  border: 5px solid;
-  border-left-color: #b804e6;
-  border-top-color: #b804e6;
-  border-right-color: #660099;
-  border-bottom-color: #660099;
-  font-size: 36px;
-}
-
-.create-room-input:focus {
-  outline: none;
-}
-
-.create-room-button {
-  background-color: #9901cc;
-  border: 5px solid;
-  border-left-color: #b804e6;
-  border-top-color: #b804e6;
-  border-right-color: #660099;
-  border-bottom-color: #660099;
-  color: #fff;
-  font-size: 30px;
-  font-weight: bold;
-  padding: 10px;
-}
-
-.create-room-button:focus {
-  outline: none;
 }
 
 .join-room-button:focus {

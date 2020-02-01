@@ -1,0 +1,43 @@
+.enter-name-form {
+  width: 315px;
+  display: flex;
+  flex-direction: column;
+}
+
+.enter-name-label {
+  margin-bottom: 10px;
+  font-size: 36px;
+  color: #f9f9f9;
+}
+
+.enter-name-input {
+  height: 45px;
+  margin-bottom: 10px;
+  border: 5px solid;
+  border-left-color: #3033f2;
+  border-top-color: #3033f2;
+  border-right-color: #020279;
+  border-bottom-color: #020279;
+  font-size: 36px;
+}
+
+.enter-name-input:focus {
+  outline: none;
+}
+
+.enter-name-button {
+  background-color: #0d05f3;
+  border: 5px solid;
+  border-left-color: #3033f2;
+  border-top-color: #3033f2;
+  border-right-color: #020279;
+  border-bottom-color: #020279;
+  color: #fff;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.enter-name-button:focus {
+  outline: none;
+}

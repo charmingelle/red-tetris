@@ -61,10 +61,10 @@ const OthersInner = ({ myId, players }) => (
   <ul className="others">
     {Object.values(players)
       .filter(({ id }) => id !== myId)
-      .map(({ id, pile, score, isGameOver }) => (
+      .map(({ id, name, pile, score, isGameOver }) => (
         <li key={id} className="other">
           {renderOtherGame(pile, isGameOver)}
-          <div className="score">{`${id}: ${score}`}</div>
+          <div className="score">{`${name}: ${score}`}</div>
         </li>
       ))}
   </ul>
