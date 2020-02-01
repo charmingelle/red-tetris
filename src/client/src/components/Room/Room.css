@@ -55,6 +55,10 @@
   padding: 10px;
 }
 
+.start-game-button:focus {
+  outline: none;
+}
+
 .game-over {
   position: absolute;
   top: 50%;

@@ -2,11 +2,130 @@
   width: 100vw;
   height: 100vh;
   display: flex;
+}
+
+.lobby-left {
+  width: 70%;
+  height: 100vh;
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-color: #666666;
 }
 
-.room-button {
-  margin: 10px;
+.no-rooms-label {
+  margin: 20px;
+  line-height: 55px;
+  font-size: 36px;
+  color: #f9f9f9;
+}
+
+.room-list {
+  width: 700px;
+  height: 90%;
+  outline: 5px solid #f9f9f9;
+  background-color: black;
+  overflow: scroll;
+}
+
+.room-item {
+  margin: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.room-name {
+  line-height: 55px;
+  width: 440px;
+  line-height: 55px;
+  font-size: 36px;
+  color: #f9f9f9;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-right: 30px;
+}
+
+.room-actions {
+  width: 170px;
+  display: flex;
+}
+
+.game-in-progress-label {
+  font-size: 30px;
+  color: #129c0a;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.join-room-button {
+  width: 100%;
+  background-color: #c00;
+  border: 5px solid;
+  border-left-color: #f00;
+  border-top-color: #f00;
+  border-right-color: #980000;
+  border-bottom-color: #980000;
+  color: #fff;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 0 10px;
+}
+
+.lobby-right {
+  width: 30%;
+  height: 100vh;
+  background-color: #333;
+  display: flex;
+  justify-content: center;
+}
+
+.create-room-form {
+  width: 72%;
+  display: flex;
+  flex-direction: column;
+}
+
+.create-room-label {
+  margin-bottom: 10px;
+  font-size: 36px;
+  color: #f9f9f9;
+}
+
+.create-room-input {
+  height: 45px;
+  margin-bottom: 10px;
+  border: 5px solid;
+  border-left-color: #b804e6;
+  border-top-color: #b804e6;
+  border-right-color: #660099;
+  border-bottom-color: #660099;
+  font-size: 36px;
+}
+
+.create-room-input:focus {
+  outline: none;
+}
+
+.create-room-button {
+  background-color: #9901cc;
+  border: 5px solid;
+  border-left-color: #b804e6;
+  border-top-color: #b804e6;
+  border-right-color: #660099;
+  border-bottom-color: #660099;
+  color: #fff;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.create-room-button:focus {
+  outline: none;
+}
+
+.join-room-button:focus {
+  outline: none;
 }

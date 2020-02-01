@@ -358,6 +358,7 @@ class RedTetris {
     if (room && socket.id === room.leader) {
       room.startGame();
       this.sendRoom(roomId);
+      this.sendRooms();
     }
   }
 
