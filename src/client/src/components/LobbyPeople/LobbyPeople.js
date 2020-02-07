@@ -18,7 +18,7 @@ const getRandomColor = () => {
 
 const LobbyPeopleInner = ({ people }) => (
   <div className="lobby-people">
-    <div className="lobby-people-label">People waiting in the lobby</div>
+    <div className="lobby-people-label">Players</div>
     <div className="lobby-people-list">
       {Object.keys(people)
         .reverse()

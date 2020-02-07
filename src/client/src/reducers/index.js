@@ -9,6 +9,7 @@ import {
   DROP_TETRO,
   ROTATE_TETR0,
   RIGHT_LIMIT,
+  UPDATE_MY_ROOM_ID,
 } from '../constants';
 import socketIOClient from 'socket.io-client';
 import { store } from '../index';
@@ -18,12 +19,25 @@ import {
   loadRoom,
   updateMyId,
   setTetro,
+  updateMyRoomId,
 } from '../actions';
 
-const login = 'user';
+const isHashValid = hash =>
+  hash && hash[hash.length - 1] === ']' && hash.split('[').length === 2;
+
+const getRoomNameAndPlayerName = hash => {
+  const cutHash = hash.substring(1, hash.length - 1);
+
+  return {
+    roomId: cutHash.split('[')[0],
+    playerName: cutHash.split('[')[1],
+  };
+};
 
 export const io = socketIOClient({
-  query: `login=${login}`,
+  query: isHashValid(window.location.hash)
+    ? getRoomNameAndPlayerName(window.location.hash)
+    : { anonymous: true },
 });
 
 io.on('update-people', ({ people }) => store.dispatch(loadPeople(people)));
@@ -36,10 +50,14 @@ io.on('update-room', ({ room }) => store.dispatch(loadRoom(room)));
 
 io.on('set-tetro', ({ tetro }) => store.dispatch(setTetro(tetro)));
 
+io.on('update-my-room-id', ({ myRoomId }) =>
+  store.dispatch(updateMyRoomId(myRoomId)),
+);
+
 const initialState = {
   socket: io,
   myId: null,
-  myRoomId: null,
+  myRoomId: undefined,
   myName: null,
   people: {},
   rooms: {},
@@ -234,8 +252,12 @@ export const allReducers = (state = initialState, { type, payload }) => {
       return {
         ...state,
         rooms: { ...state.room, [room.id]: room },
-        myRoomId: room.id,
       };
+    }
+    case UPDATE_MY_ROOM_ID: {
+      const myRoomId = payload;
+
+      return { ...state, myRoomId };
     }
     case SET_TETRO: {
       const tetro = payload;

@@ -24,3 +24,5 @@ export const PENALTY_COLOR = {
   lighter: '#999',
   darker: '#333',
 };
+
+export const UPDATE_MY_ROOM_ID = 'UPDATE_MY_ROOM_ID';

@@ -209,10 +209,9 @@ class Game {
 }
 
 class Room {
-  constructor({ io, id, name, leader, players = {} }) {
+  constructor({ io, id, leader, players = {} }) {
     this.io = io;
     this.id = id;
-    this.name = name;
     this.leader = leader;
     this.players = players;
     this.game = null;
@@ -228,6 +227,10 @@ class Room {
 
   removePlayer(playerId) {
     delete this.players[playerId];
+  }
+
+  setLeader(leader) {
+    this.leader = leader;
   }
 
   startGame() {
@@ -247,7 +250,6 @@ class Room {
     );
     return {
       id: this.id,
-      name: this.name,
       leader: this.leader,
       players: clientPlayers,
       game: this.game ? this.game.getGameData() : null,
@@ -262,16 +264,15 @@ class RedTetris {
     this.people = {};
 
     io.use((socket, next) => {
-      console.log(socket.id, socket.request._query.login);
+      console.log(socket.id);
       next();
     });
 
     io.on('connection', socket => {
-      this.sendId(socket);
-      this.sendRoomsToMe(socket);
+      this.sendLobbyOrRoom(socket);
 
       socket.on('set-name', ({ name }) => this.addPerson(socket, name));
-      socket.on('create-room', ({ name }) => this.createRoom(socket, name));
+      socket.on('create-room', ({ roomId }) => this.createRoom(socket, roomId));
       socket.on('join-room', ({ roomId }) => this.joinRoom(socket, roomId));
       socket.on('start-game', ({ roomId }) => this.startGame(socket, roomId));
       socket.on('get-tetro', ({ roomId, playerId }) =>
@@ -287,6 +288,49 @@ class RedTetris {
         this.finishGame(roomId, playerId),
       );
       socket.on('disconnect', () => this.disconnect(socket));
+    });
+  }
+
+  sendLobbyOrRoom(socket) {
+    const { anonymous, roomId, playerName } = socket.request._query;
+
+    if (anonymous) {
+      return this.sendInitialData(socket);
+    }
+    this.people[socket.id] = playerName;
+    if (!this.isExistingRoom(roomId)) {
+      this.createRoom(socket, roomId);
+    }
+    if (!this.isPlayerInTheRoom(socket.id, roomId)) {
+      return this.joinRoom(socket, roomId);
+    }
+    this.sendInitialData(socket);
+  }
+
+  sendInitialData(socket) {
+    this.sendId(socket);
+    this.sendRoomsToMe(socket);
+    this.sendMyRoomIdToMe(socket);
+    this.sendPeople();
+  }
+
+  isExistingRoom(roomId) {
+    return this.rooms[roomId] !== undefined;
+  }
+
+  isPlayerInTheRoom(playerId, roomId) {
+    return Object.keys(this.rooms[roomId].players).includes(playerId);
+  }
+
+  getMyRoomId(playerId) {
+    return Object.keys(this.rooms).find(roomId =>
+      Object.keys(this.rooms[roomId].players).includes(playerId),
+    );
+  }
+
+  sendMyRoomIdToMe(socket) {
+    this.io.to(socket.id).emit('update-my-room-id', {
+      myRoomId: this.getMyRoomId(socket.id),
     });
   }
 
@@ -347,13 +391,10 @@ class RedTetris {
     });
   }
 
-  createRoom(socket, name) {
-    const roomId = this.getNewRoomId();
-
+  createRoom(socket, roomId) {
     this.rooms[roomId] = new Room({
       io: this.io,
       id: roomId,
-      name,
       leader: socket.id,
       players: {},
     });
@@ -363,9 +404,10 @@ class RedTetris {
   joinRoom(socket, roomId) {
     const room = this.rooms[roomId];
 
-    if (room) {
+    if (room && !room.game) {
       room.addPlayer(socket.id, this.people[socket.id]);
       socket.join(roomId);
+      this.sendInitialData(socket);
       this.sendRoom(roomId);
       this.sendRooms();
     }
@@ -453,6 +495,9 @@ class RedTetris {
       if (playerToRemove) {
         room.removePlayer(socket.id);
         socket.leave(roomId);
+        if (room.leader === socket.id && Object.keys(room.players).length) {
+          room.setLeader(Object.keys(room.players)[0]);
+        }
         this.sendRoom(roomId);
         if (!Object.keys(room.players).length) {
           this.deleteRoom(roomId);

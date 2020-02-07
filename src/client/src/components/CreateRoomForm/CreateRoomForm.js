@@ -4,7 +4,7 @@ import './CreateRoomForm.css';
 
 const createRoom = (newRoomName, setNewRoomName, socket) => () => {
   if (newRoomName) {
-    socket.emit('create-room', { name: newRoomName });
+    socket.emit('create-room', { roomId: newRoomName });
     setNewRoomName('');
   }
 };

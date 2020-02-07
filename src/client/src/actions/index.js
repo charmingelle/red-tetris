@@ -8,6 +8,7 @@ import {
   ROTATE_TETR0,
   SET_TETRO,
   UPDATE_MY_ID,
+  UPDATE_MY_ROOM_ID,
 } from '../constants';
 
 export const dropTetro = () => ({
@@ -50,4 +51,9 @@ export const setTetro = tetro => ({
 export const updateMyId = myId => ({
   type: UPDATE_MY_ID,
   payload: myId,
+});
+
+export const updateMyRoomId = myRoomId => ({
+  type: UPDATE_MY_ROOM_ID,
+  payload: myRoomId,
 });

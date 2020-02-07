@@ -5,14 +5,17 @@ import { EnterNameForm } from '../EnterNameForm';
 import { CreateRoomForm } from '../CreateRoomForm';
 import { LobbyPeople } from '../LobbyPeople';
 
-const joinRoom = (socket, id) => () => socket.emit('join-room', { roomId: id });
+const joinRoom = (socket, id, myName) => () => {
+  window.location.hash = `#${id}[${myName}]`;
+  socket.emit('join-room', { roomId: id });
+};
 
-const RoomList = ({ rooms, socket }) =>
+const RoomList = ({ myName, rooms, socket }) =>
   Object.values(rooms)
     .reverse()
-    .map(({ id, name, game }) => (
+    .map(({ id, game }) => (
       <div key={id} className="room-item">
-        <div className="room-name">{name}</div>
+        <div className="room-name">{id}</div>
         <div className="room-actions">
           {game ? (
             <div className="game-in-progress-label">Game on...</div>
@@ -20,7 +23,7 @@ const RoomList = ({ rooms, socket }) =>
             <button
               className="join-room-button"
               key={id}
-              onClick={joinRoom(socket, id)}
+              onClick={joinRoom(socket, id, myName)}
             >
               Join
             </button>
@@ -32,7 +35,7 @@ const RoomList = ({ rooms, socket }) =>
 const RoomListBoard = ({ myName, rooms, socket }) => (
   <div className="room-list">
     {myName && Object.values(rooms).length ? (
-      <RoomList rooms={rooms} socket={socket} />
+      <RoomList myName={myName} rooms={rooms} socket={socket} />
     ) : myName ? (
       <div className="no-rooms-label">No rooms yet</div>
     ) : (
@@ -55,7 +58,7 @@ export const LobbyInner = ({ myName, people, rooms, socket }) => (
         )}
       </div>
       {myName ? <CreateRoomForm /> : null}
-      {Object.values(people).length ? <LobbyPeople /> : null}
+      {myName && Object.values(people).length ? <LobbyPeople /> : null}
     </div>
   </div>
 );
