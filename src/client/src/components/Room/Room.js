@@ -69,21 +69,20 @@ const GameDetails = ({ socket, myId, roomId, leader, game }) =>
     </div>
   ) : null;
 
-const Game = ({ game, isMyGameOver }) =>
-  game ? (
-    <>
-      <Tetromino />
-      <Pile />
-      <Penalty />
-      {isMyGameOver && <div className="game-over">GAME OVER</div>}
-    </>
-  ) : null;
+const Game = ({ isMyGameOver }) => (
+  <>
+    <Tetromino />
+    <Pile />
+    <Penalty />
+    {isMyGameOver && <div className="game-over">GAME OVER</div>}
+  </>
+);
 
-const Field = ({ myName, game, score, isMyGameOver }) => {
+const Field = ({ myName, score, isMyGameOver }) => {
   return (
     <div className="field-container">
       <div className="field" tabIndex={0}>
-        <Game game={game} isMyGameOver={isMyGameOver} />
+        <Game isMyGameOver={isMyGameOver} />
       </div>
       <div className="my-score">{`${myName}: ${score}`}</div>
     </div>
@@ -99,25 +98,22 @@ const RoomInner = ({
   game,
   score,
   isMyGameOver,
-}) => (
-  <div className="room">
-    <Field
-      myName={myName}
-      game={game}
-      score={score}
-      isMyGameOver={isMyGameOver}
-    />
-    <div className="game-details-container">
-      <GameDetails
-        socket={socket}
-        myId={myId}
-        roomId={roomId}
-        leader={leader}
-        game={game}
-      />
+}) => {
+  return (
+    <div className="room">
+      <Field myName={myName} score={score} isMyGameOver={isMyGameOver} />
+      <div className="game-details-container">
+        <GameDetails
+          socket={socket}
+          myId={myId}
+          roomId={roomId}
+          leader={leader}
+          game={game}
+        />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const mapStateToProps = ({ socket, myId, myRoomId, myName, rooms }) => ({
   socket,

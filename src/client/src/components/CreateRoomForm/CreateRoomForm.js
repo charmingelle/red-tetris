@@ -2,15 +2,24 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import './CreateRoomForm.css';
 
-const createRoom = (newRoomName, setNewRoomName, socket) => () => {
+const createRoom = (newRoomName, setNewRoomName, socket) => {
   if (newRoomName) {
     socket.emit('create-room', { roomId: newRoomName });
     setNewRoomName('');
   }
 };
 
-const changeNewRoomName = setNewRoomName => ({ target: { value } }) =>
+const handleRoomNameChange = setNewRoomName => ({ target: { value } }) =>
   setNewRoomName(value);
+
+const handleKeyPress = (newRoomName, setNewRoomName, socket) => ({ key }) => {
+  if (key === 'Enter') {
+    createRoom(newRoomName, setNewRoomName, socket);
+  }
+};
+
+const handleButtonClick = (newRoomName, setNewRoomName, socket) => () =>
+  createRoom(newRoomName, setNewRoomName, socket);
 
 const CreateRoomFormInner = ({ socket }) => {
   const [newRoomName, setNewRoomName] = useState('');
@@ -23,11 +32,12 @@ const CreateRoomFormInner = ({ socket }) => {
         value={newRoomName}
         type="text"
         placeholder="Enter name..."
-        onChange={changeNewRoomName(setNewRoomName)}
+        onChange={handleRoomNameChange(setNewRoomName)}
+        onKeyPress={handleKeyPress(newRoomName, setNewRoomName, socket)}
       />
       <button
         className="create-room-button"
-        onClick={createRoom(newRoomName, setNewRoomName, socket)}
+        onClick={handleButtonClick(newRoomName, setNewRoomName, socket)}
       >
         Create
       </button>

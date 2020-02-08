@@ -57,6 +57,10 @@ class Player {
     this.io = io;
     this.id = id;
     this.name = name;
+    this.init();
+  }
+
+  init() {
     this.pile = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -173,15 +177,7 @@ class Game {
   }
 
   getGameData() {
-    const clientPlayers = {};
-
-    Object.keys(this.room.players).map(
-      playerId =>
-        (clientPlayers[playerId] = this.room.players[playerId].getPlayerData()),
-    );
-
     return {
-      players: clientPlayers,
       tetro: this.tetros[this.tetros.length - 1],
     };
   }
@@ -397,12 +393,17 @@ class RedTetris {
     this.sendRooms();
   }
 
+  resetPlayerGames(room) {
+    Object.values(room.players).forEach(player => player.init());
+  }
+
   startGame(socket, roomId) {
     const room = this.rooms[roomId];
 
     if (room && socket.id === room.leader) {
+      this.resetPlayerGames(room);
+      this.sendRooms();
       room.startGame();
-      this.sendRoom(roomId);
       this.sendRooms();
     }
   }
@@ -453,11 +454,25 @@ class RedTetris {
     }
   }
 
+  isRoomGameOver(roomId) {
+    return Object.values(this.rooms[roomId].players).every(
+      player => player.isGameOver,
+    );
+  }
+
+  resetRoomGame(roomId, newLeader) {
+    this.rooms[roomId].game = null;
+    this.rooms[roomId].leader = newLeader;
+  }
+
   finishGame(roomId, playerId) {
     const player = this.getRoomPlayer({ roomId, playerId });
 
     if (player) {
       player.finishGame();
+      if (this.isRoomGameOver(roomId)) {
+        this.resetRoomGame(roomId, player.id);
+      }
       this.sendRoom(roomId);
     }
   }

@@ -2,14 +2,23 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import './EnterNameForm.css';
 
-const saveName = (name, setName, socket) => () => {
+const saveName = (name, setName, socket) => {
   if (name) {
     socket.emit('set-name', { name });
     setName('');
   }
 };
 
-const onNameChange = setName => ({ target: { value } }) => setName(value);
+const handleNameChange = setName => ({ target: { value } }) => setName(value);
+
+const handleKeyPress = (name, setName, socket) => ({ key }) => {
+  if (key === 'Enter') {
+    saveName(name, setName, socket);
+  }
+};
+
+const handleButtonClick = (name, setName, socket) => () =>
+  saveName(name, setName, socket);
 
 const EnterNameFormInner = ({ socket }) => {
   const [name, setName] = useState('');
@@ -22,11 +31,12 @@ const EnterNameFormInner = ({ socket }) => {
         value={name}
         type="text"
         placeholder="Enter name..."
-        onChange={onNameChange(setName)}
+        onChange={handleNameChange(setName)}
+        onKeyPress={handleKeyPress(name, setName, socket)}
       />
       <button
         className="enter-name-button"
-        onClick={saveName(name, setName, socket)}
+        onClick={handleButtonClick(name, setName, socket)}
       >
         Confirm
       </button>
