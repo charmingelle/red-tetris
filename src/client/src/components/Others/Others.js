@@ -7,6 +7,7 @@ import {
   BOTTOM_LIMIT,
   RIGHT_LIMIT,
   PENALTY_COLOR,
+  INVISIBLE_ROW_AMOUNT,
 } from '../../constants';
 
 const renderOtherGameOver = () => (
@@ -21,7 +22,7 @@ const renderOtherPenalty = startRow => {
       penaltyRows.unshift(
         <Square
           left={colIndex}
-          top={rowIndex}
+          top={rowIndex - INVISIBLE_ROW_AMOUNT}
           color={PENALTY_COLOR}
           key={`${rowIndex}+${colIndex}`}
           shift={OTHER_SHIFT}
@@ -33,19 +34,21 @@ const renderOtherPenalty = startRow => {
 };
 
 const renderOtherPile = pile =>
-  pile.map((row, rowIndex) =>
-    row.map((el, colIndex) =>
-      el !== 0 ? (
-        <Square
-          left={colIndex}
-          top={rowIndex}
-          color={el}
-          key={`${rowIndex}+${colIndex}`}
-          shift={OTHER_SHIFT}
-        />
-      ) : null,
-    ),
-  );
+  pile
+    .slice(INVISIBLE_ROW_AMOUNT)
+    .map((row, rowIndex) =>
+      row.map((el, colIndex) =>
+        el !== 0 ? (
+          <Square
+            left={colIndex}
+            top={rowIndex}
+            color={el}
+            key={`${rowIndex}+${colIndex}`}
+            shift={OTHER_SHIFT}
+          />
+        ) : null,
+      ),
+    );
 
 const renderOtherGame = (pile, isGameOver) =>
   isGameOver ? (

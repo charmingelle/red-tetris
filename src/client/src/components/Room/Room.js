@@ -69,28 +69,44 @@ const GameDetails = ({ socket, myId, roomId, leader, game }) =>
     </div>
   ) : null;
 
-const Game = ({ game }) =>
+const Game = ({ game, isMyGameOver }) =>
   game ? (
     <>
       <Tetromino />
       <Pile />
       <Penalty />
-      {game.isOver && <div className="game-over">GAME OVER</div>}
+      {isMyGameOver && <div className="game-over">GAME OVER</div>}
     </>
   ) : null;
 
-const Field = ({ myName, game, score }) => (
-  <div className="field-container">
-    <div className="field" tabIndex={0}>
-      <Game game={game} />
+const Field = ({ myName, game, score, isMyGameOver }) => {
+  return (
+    <div className="field-container">
+      <div className="field" tabIndex={0}>
+        <Game game={game} isMyGameOver={isMyGameOver} />
+      </div>
+      <div className="my-score">{`${myName}: ${score}`}</div>
     </div>
-    <div className="my-score">{`${myName}: ${score}`}</div>
-  </div>
-);
+  );
+};
 
-const RoomInner = ({ socket, myId, roomId, myName, leader, game, score }) => (
+const RoomInner = ({
+  socket,
+  myId,
+  roomId,
+  myName,
+  leader,
+  game,
+  score,
+  isMyGameOver,
+}) => (
   <div className="room">
-    <Field myName={myName} game={game} score={score} />
+    <Field
+      myName={myName}
+      game={game}
+      score={score}
+      isMyGameOver={isMyGameOver}
+    />
     <div className="game-details-container">
       <GameDetails
         socket={socket}
@@ -111,6 +127,7 @@ const mapStateToProps = ({ socket, myId, myRoomId, myName, rooms }) => ({
   leader: rooms[myRoomId].leader,
   game: rooms[myRoomId].game,
   score: rooms[myRoomId].players[myId].score,
+  isMyGameOver: rooms[myRoomId].players[myId].isGameOver,
 });
 
 export const Room = connect(mapStateToProps)(RoomInner);

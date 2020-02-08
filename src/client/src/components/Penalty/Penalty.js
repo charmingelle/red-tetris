@@ -6,6 +6,7 @@ import {
   RIGHT_LIMIT,
   SHIFT,
   PENALTY_COLOR,
+  INVISIBLE_ROW_AMOUNT,
 } from '../../constants';
 
 const InnerPenalty = ({ startRow }) => {
@@ -16,7 +17,7 @@ const InnerPenalty = ({ startRow }) => {
       penaltyRows.unshift(
         <Square
           left={colIndex}
-          top={rowIndex}
+          top={rowIndex - INVISIBLE_ROW_AMOUNT}
           color={PENALTY_COLOR}
           key={`${rowIndex}+${colIndex}`}
           shift={SHIFT}

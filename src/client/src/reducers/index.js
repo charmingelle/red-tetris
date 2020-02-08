@@ -213,7 +213,7 @@ const isGameOver = (newTetro, pile) => {
 
   for (let i = 0; i < figure.length; i++) {
     for (let j = 0; j < figure[i].length; j++) {
-      if (!pile[i + row] || pile[i + row][j + col] !== 0) {
+      if (pile[i + row][j + col] !== 0) {
         return true;
       }
     }
@@ -221,10 +221,10 @@ const isGameOver = (newTetro, pile) => {
   return false;
 };
 
-const finishGame = ({ socket, roomId, playerId }) =>
+const finishGame = ({ socket, myRoomId, myId }) =>
   socket.emit('finish-game', {
-    roomId,
-    playerId,
+    roomId: myRoomId,
+    playerId: myId,
   });
 
 const getMyPile = state => state.rooms[state.myRoomId].players[state.myId].pile;
@@ -265,7 +265,7 @@ export const allReducers = (state = initialState, { type, payload }) => {
 
       if (isGameOver(tetro, pile)) {
         finishGame(state);
-        return state;
+        return { ...state, tetro: null };
       }
       return { ...state, tetro };
     }

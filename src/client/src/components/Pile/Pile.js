@@ -1,23 +1,25 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Square } from '../Square';
-import { SHIFT } from '../../constants';
+import { SHIFT, INVISIBLE_ROW_AMOUNT } from '../../constants';
 
 const InnerPile = props => (
   <>
-    {props.pile.map((row, rowIndex) =>
-      row.map((el, colIndex) =>
-        el !== 0 ? (
-          <Square
-            left={colIndex}
-            top={rowIndex}
-            color={el}
-            key={`${rowIndex}+${colIndex}`}
-            shift={SHIFT}
-          />
-        ) : null,
-      ),
-    )}
+    {props.pile
+      .slice(INVISIBLE_ROW_AMOUNT)
+      .map((row, rowIndex) =>
+        row.map((el, colIndex) =>
+          el !== 0 ? (
+            <Square
+              left={colIndex}
+              top={rowIndex}
+              color={el}
+              key={`${rowIndex}+${colIndex}`}
+              shift={SHIFT}
+            />
+          ) : null,
+        ),
+      )}
   </>
 );
 

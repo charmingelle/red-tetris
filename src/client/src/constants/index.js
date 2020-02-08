@@ -14,7 +14,8 @@ export const DROP_TETRO = 'DROP_TETRO';
 export const ROTATE_TETR0 = 'ROTATE_TETRO';
 
 export const RIGHT_LIMIT = 10;
-export const BOTTOM_LIMIT = 20;
+export const BOTTOM_LIMIT = 23;
+export const INVISIBLE_ROW_AMOUNT = 3;
 
 export const SHIFT = 50;
 export const OTHER_SHIFT = 10;

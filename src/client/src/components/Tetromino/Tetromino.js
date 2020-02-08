@@ -1,7 +1,7 @@
 import React from 'react';
 import { Square } from '../Square';
 import { connect } from 'react-redux';
-import { SHIFT } from '../../constants';
+import { SHIFT, INVISIBLE_ROW_AMOUNT } from '../../constants';
 
 export const TetrominoInner = ({ tetro }) => {
   if (tetro) {
@@ -10,11 +10,13 @@ export const TetrominoInner = ({ tetro }) => {
 
     figure.map((figureRow, figureRowIndex) =>
       figureRow.forEach((figureEl, figureColIndex) => {
-        if (figureEl !== 0) {
+        const squareRowIndex = figureRowIndex + row;
+
+        if (figureEl !== 0 && squareRowIndex >= INVISIBLE_ROW_AMOUNT) {
           squares.push(
             <Square
               left={figureColIndex + col}
-              top={figureRowIndex + row}
+              top={squareRowIndex - INVISIBLE_ROW_AMOUNT}
               color={color}
               key={`${figureRowIndex}-${figureColIndex}`}
               shift={SHIFT}

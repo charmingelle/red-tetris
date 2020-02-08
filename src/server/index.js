@@ -5,41 +5,16 @@ const http = app.listen(post, () =>
   console.log(`Server is running on port ${5000}`),
 );
 
-const LINE = [
-  [0, 0, 1, 0],
-  [0, 0, 1, 0],
-  [0, 0, 1, 0],
-  [0, 0, 1, 0],
-];
-const GI = [
-  [1, 1, 1],
-  [0, 0, 1],
-  [0, 0, 0],
-];
-const GI2 = [
-  [1, 1, 1],
-  [1, 0, 0],
-  [0, 0, 0],
-];
-const SQUARE = [
-  [1, 1],
-  [1, 1],
-];
-const ZI = [
-  [1, 1, 0],
-  [0, 1, 1],
-  [0, 0, 0],
-];
-const ZI2 = [
-  [0, 1, 1],
-  [1, 1, 0],
-  [0, 0, 0],
-];
-const TI = [
-  [1, 1, 1],
-  [0, 1, 0],
-  [0, 0, 0],
-];
+const LINE = {
+  shape: [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0]],
+  initRow: 0,
+};
+const GI = { shape: [[0, 0, 0], [1, 1, 1], [0, 0, 1]], initRow: 1 };
+const GI2 = { shape: [[0, 0, 0], [1, 1, 1], [1, 0, 0]], initRow: 1 };
+const SQUARE = { shape: [[1, 1], [1, 1]], initRow: 2 };
+const ZI = { shape: [[0, 0, 0], [1, 1, 0], [0, 1, 1]], initRow: 1 };
+const ZI2 = { shape: [[0, 0, 0], [0, 1, 1], [1, 1, 0]], initRow: 1 };
+const TI = { shape: [[0, 0, 0], [1, 1, 1], [0, 1, 0]], initRow: 1 };
 
 const RED = {
   main: '#c00',
@@ -83,6 +58,9 @@ class Player {
     this.id = id;
     this.name = name;
     this.pile = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -184,10 +162,11 @@ class Game {
     const colors = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, VIOLET];
     const randomFigureIndex = Math.floor(Math.random() * figures.length);
     const randomColorIndex = Math.floor(Math.random() * colors.length);
+    const randomFigure = figures[randomFigureIndex];
 
     return {
-      figure: figures[randomFigureIndex],
-      row: 0,
+      figure: randomFigure.shape,
+      row: randomFigure.initRow,
       col: 4,
       color: colors[randomColorIndex],
     };
