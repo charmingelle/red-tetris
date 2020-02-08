@@ -21,17 +21,19 @@ import {
   setTetro,
   updateMyRoomId,
 } from '../actions';
+import { isNameValid } from '../utils';
 
 const isHashValid = hash =>
   hash && hash[hash.length - 1] === ']' && hash.split('[').length === 2;
 
 const getRoomNameAndPlayerName = hash => {
   const cutHash = hash.substring(1, hash.length - 1);
+  const roomId = cutHash.split('[')[0];
+  const playerName = cutHash.split('[')[1];
 
-  return {
-    roomId: cutHash.split('[')[0],
-    playerName: cutHash.split('[')[1],
-  };
+  return isNameValid(roomId) && isNameValid(playerName)
+    ? { roomId, playerName }
+    : { anonymous: true };
 };
 
 export const io = socketIOClient({

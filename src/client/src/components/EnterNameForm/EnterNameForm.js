@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import './EnterNameForm.css';
+import { isNameValid } from '../../utils';
 
 const saveName = (name, setName, socket) => {
-  if (name) {
+  if (isNameValid(name)) {
     socket.emit('set-name', { name });
     setName('');
   }
@@ -33,6 +34,7 @@ const EnterNameFormInner = ({ socket }) => {
         placeholder="Enter name..."
         onChange={handleNameChange(setName)}
         onKeyPress={handleKeyPress(name, setName, socket)}
+        maxLength="15"
       />
       <button
         className="enter-name-button"

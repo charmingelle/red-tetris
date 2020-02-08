@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import './CreateRoomForm.css';
+import { isNameValid } from '../../utils';
 
 const createRoom = (newRoomName, setNewRoomName, socket) => {
-  if (newRoomName) {
+  if (isNameValid(newRoomName)) {
     socket.emit('create-room', { roomId: newRoomName });
     setNewRoomName('');
   }
@@ -34,6 +35,7 @@ const CreateRoomFormInner = ({ socket }) => {
         placeholder="Enter name..."
         onChange={handleRoomNameChange(setNewRoomName)}
         onKeyPress={handleKeyPress(newRoomName, setNewRoomName, socket)}
+        maxLength="15"
       />
       <button
         className="create-room-button"
