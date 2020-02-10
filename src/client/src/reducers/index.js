@@ -21,25 +21,14 @@ import {
   setTetro,
   updateMyRoomId,
 } from '../actions';
-import { isNameValid } from '../utils';
-
-const isHashValid = hash =>
-  hash && hash[hash.length - 1] === ']' && hash.split('[').length === 2;
-
-const getRoomNameAndPlayerName = hash => {
-  const cutHash = hash.substring(1, hash.length - 1);
-  const roomId = cutHash.split('[')[0];
-  const playerName = cutHash.split('[')[1];
-
-  return isNameValid(roomId) && isNameValid(playerName)
-    ? { roomId, playerName }
-    : { anonymous: true };
-};
+import {
+  getRoomIdAndPlayerName,
+  transposeSquareMatrix,
+  reverseSquareMatrixRows,
+} from '../utils';
 
 export const io = socketIOClient({
-  query: isHashValid(window.location.hash)
-    ? getRoomNameAndPlayerName(window.location.hash)
-    : { anonymous: true },
+  query: getRoomIdAndPlayerName(window.location.hash),
 });
 
 io.on('update-people', ({ people }) => store.dispatch(loadPeople(people)));
@@ -106,37 +95,11 @@ const cannotMoveTetro = (figure, row, col, pile) =>
   !isTetroInsideField(figure, row, col, pile) ||
   wasPileHit(figure, row, col, pile);
 
-const transposeMatrix = figure => {
-  const figureSize = figure.length;
-  let temp;
-
-  for (let i = 0; i < figureSize; i++) {
-    for (let j = i; j < figureSize; j++) {
-      temp = figure[i][j];
-      figure[i][j] = figure[j][i];
-      figure[j][i] = temp;
-    }
-  }
-};
-
-const reverseColumns = figure => {
-  const figureSize = figure.length;
-  let temp;
-
-  for (let i = 0; i < figureSize; i++) {
-    for (let j = 0, k = figureSize - 1; j < k; j++, k--) {
-      temp = figure[j][i];
-      figure[j][i] = figure[k][i];
-      figure[k][i] = temp;
-    }
-  }
-};
-
 const getRotatedFigure = figure => {
   const rotatedFigure = JSON.parse(JSON.stringify(figure));
 
-  transposeMatrix(rotatedFigure);
-  reverseColumns(rotatedFigure);
+  transposeSquareMatrix(rotatedFigure);
+  reverseSquareMatrixRows(rotatedFigure);
   return rotatedFigure;
 };
 

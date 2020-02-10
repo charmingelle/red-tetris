@@ -6,15 +6,61 @@ const http = app.listen(post, () =>
 );
 
 const LINE = {
-  shape: [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0]],
+  shape: [
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+  ],
   initRow: 0,
 };
-const GI = { shape: [[0, 0, 0], [1, 1, 1], [0, 0, 1]], initRow: 1 };
-const GI2 = { shape: [[0, 0, 0], [1, 1, 1], [1, 0, 0]], initRow: 1 };
-const SQUARE = { shape: [[1, 1], [1, 1]], initRow: 2 };
-const ZI = { shape: [[0, 0, 0], [1, 1, 0], [0, 1, 1]], initRow: 1 };
-const ZI2 = { shape: [[0, 0, 0], [0, 1, 1], [1, 1, 0]], initRow: 1 };
-const TI = { shape: [[0, 0, 0], [1, 1, 1], [0, 1, 0]], initRow: 1 };
+const GI = {
+  shape: [
+    [0, 0, 0],
+    [1, 1, 1],
+    [0, 0, 1],
+  ],
+  initRow: 1,
+};
+const GI2 = {
+  shape: [
+    [0, 0, 0],
+    [1, 1, 1],
+    [1, 0, 0],
+  ],
+  initRow: 1,
+};
+const SQUARE = {
+  shape: [
+    [1, 1],
+    [1, 1],
+  ],
+  initRow: 2,
+};
+const ZI = {
+  shape: [
+    [0, 0, 0],
+    [1, 1, 0],
+    [0, 1, 1],
+  ],
+  initRow: 1,
+};
+const ZI2 = {
+  shape: [
+    [0, 0, 0],
+    [0, 1, 1],
+    [1, 1, 0],
+  ],
+  initRow: 1,
+};
+const TI = {
+  shape: [
+    [0, 0, 0],
+    [1, 1, 1],
+    [0, 1, 0],
+  ],
+  initRow: 1,
+};
 
 const RED = {
   main: '#c00',
@@ -267,9 +313,9 @@ class RedTetris {
   }
 
   sendLobbyOrRoom(socket) {
-    const { anonymous, roomId, playerName } = socket.request._query;
+    const { roomId, playerName } = socket.request._query;
 
-    if (anonymous) {
+    if (!roomId && !playerName) {
       return this.sendInitialData(socket);
     }
     this.people[socket.id] = playerName;
