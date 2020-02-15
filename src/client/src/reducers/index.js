@@ -8,7 +8,6 @@ import {
   MOVE_TETRO_DOWN,
   DROP_TETRO,
   ROTATE_TETR0,
-  RIGHT_LIMIT,
   UPDATE_MY_ROOM_ID,
 } from '../constants';
 import socketIOClient from 'socket.io-client';
@@ -21,11 +20,15 @@ import {
   setTetro,
   updateMyRoomId,
 } from '../actions';
+import { getRoomIdAndPlayerName } from '../utils/common';
 import {
-  getRoomIdAndPlayerName,
-  transposeSquareMatrix,
-  reverseSquareMatrixRows,
-} from '../utils';
+  wasPileCrossed,
+  cannotMoveTetro,
+  getRotatedFigure,
+  getPileWithTetro,
+  getPileWithDropedTetro,
+  isGameOver,
+} from '../utils/game';
 
 export const io = socketIOClient({
   query: getRoomIdAndPlayerName(window.location.hash),
@@ -55,54 +58,6 @@ const initialState = {
   tetro: null,
 };
 
-const wasPileHit = (figure, row, col, pile) => {
-  const lastRow = pile.length - 1;
-
-  for (let rowIndex = 0; rowIndex < figure.length; rowIndex++) {
-    for (let colIndex = 0; colIndex < figure[rowIndex].length; colIndex++) {
-      if (figure[rowIndex][colIndex] !== 0 && row + rowIndex > lastRow) {
-        return true;
-      }
-      if (
-        figure[rowIndex][colIndex] !== 0 &&
-        pile[rowIndex + row][colIndex + col] !== 0
-      ) {
-        return true;
-      }
-    }
-  }
-  return false;
-};
-
-const isTetroInsideField = (figure, row, col, pile) => {
-  for (let rowIndex = 0; rowIndex < figure.length; rowIndex++) {
-    for (let colIndex = 0; colIndex < figure[rowIndex].length; colIndex++) {
-      const elRow = rowIndex + row;
-      const elCol = colIndex + col;
-
-      if (
-        figure[rowIndex][colIndex] !== 0 &&
-        (elRow < 0 || elRow >= pile.length || elCol < 0 || elCol >= RIGHT_LIMIT)
-      ) {
-        return false;
-      }
-    }
-  }
-  return true;
-};
-
-const cannotMoveTetro = (figure, row, col, pile) =>
-  !isTetroInsideField(figure, row, col, pile) ||
-  wasPileHit(figure, row, col, pile);
-
-const getRotatedFigure = figure => {
-  const rotatedFigure = JSON.parse(JSON.stringify(figure));
-
-  transposeSquareMatrix(rotatedFigure);
-  reverseSquareMatrixRows(rotatedFigure);
-  return rotatedFigure;
-};
-
 const removeRows = (pile, state) => {
   const newPile = JSON.parse(JSON.stringify(pile));
   let points = 0;
@@ -117,40 +72,6 @@ const removeRows = (pile, state) => {
   }
   increaseMyScore(points, state);
   setMyPile(newPile, state);
-};
-
-const getPileWithDropedTetro = (tetro, pile) => {
-  const { figure, col, color } = tetro;
-
-  for (let rowIndex = 0; rowIndex < pile.length; rowIndex++) {
-    if (wasPileHit(figure, rowIndex, col, pile)) {
-      const newPile = JSON.parse(JSON.stringify(pile));
-
-      figure.forEach((figureFow, figureRowIndex) =>
-        figureFow.forEach((_el, colIndex) => {
-          if (figure[figureRowIndex][colIndex] !== 0) {
-            newPile[figureRowIndex + rowIndex - 1][colIndex + col] = color;
-          }
-        }),
-      );
-      return newPile;
-    }
-  }
-  return pile;
-};
-
-const getPileWithTetro = (tetro, pile) => {
-  const { figure, row, col, color } = tetro;
-  const newPile = JSON.parse(JSON.stringify(pile));
-
-  figure.forEach((figureFow, rowIndex) =>
-    figureFow.forEach((_el, colIndex) => {
-      if (figure[rowIndex][colIndex] !== 0) {
-        newPile[rowIndex + row][colIndex + col] = color;
-      }
-    }),
-  );
-  return newPile;
 };
 
 const getNewTetro = ({ socket, myRoomId, myId }) =>
@@ -172,19 +93,6 @@ const increaseMyScore = (points, { socket, myRoomId, myId }) =>
     playerId: myId,
     points,
   });
-
-const isGameOver = (newTetro, pile) => {
-  const { figure, row, col } = newTetro;
-
-  for (let i = 0; i < figure.length; i++) {
-    for (let j = 0; j < figure[i].length; j++) {
-      if (pile[i + row][j + col] !== 0) {
-        return true;
-      }
-    }
-  }
-  return false;
-};
 
 const finishGame = ({ socket, myRoomId, myId }) =>
   socket.emit('finish-game', {
@@ -291,7 +199,7 @@ export const allReducers = (state = initialState, { type, payload }) => {
       const pile = getMyPile(state);
       const newRow = tetro.row + 1;
 
-      if (wasPileHit(tetro.figure, newRow, tetro.col, pile)) {
+      if (wasPileCrossed(tetro.figure, newRow, tetro.col, pile)) {
         removeRows(getPileWithTetro(tetro, pile), state);
         getNewTetro(state);
         return state;

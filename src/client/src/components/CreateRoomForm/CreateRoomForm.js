@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import './CreateRoomForm.css';
-import { isNameValid } from '../../utils';
+import { isNameValid } from '../../utils/common';
 
 const createRoom = (newRoomName, setNewRoomName, socket) => {
   if (isNameValid(newRoomName)) {

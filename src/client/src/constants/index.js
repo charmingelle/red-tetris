@@ -12,11 +12,11 @@ export const MOVE_TETRO = 'MOVE_TETRO';
 export const MOVE_TETRO_DOWN = 'MOVE_TETRO_DOWN';
 export const DROP_TETRO = 'DROP_TETRO';
 export const ROTATE_TETR0 = 'ROTATE_TETRO';
+export const UPDATE_MY_ROOM_ID = 'UPDATE_MY_ROOM_ID';
 
 export const RIGHT_LIMIT = 10;
 export const BOTTOM_LIMIT = 23;
 export const INVISIBLE_ROW_AMOUNT = 3;
-
 export const SHIFT = 50;
 export const OTHER_SHIFT = 10;
 
@@ -25,5 +25,3 @@ export const PENALTY_COLOR = {
   lighter: '#999',
   darker: '#333',
 };
-
-export const UPDATE_MY_ROOM_ID = 'UPDATE_MY_ROOM_ID';

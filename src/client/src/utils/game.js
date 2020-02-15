@@ -1,0 +1,94 @@
+import { RIGHT_LIMIT } from '../constants';
+import { transposeSquareMatrix, reverseSquareMatrixRows } from './common';
+
+export const wasPileCrossed = (figure, row, col, pile) => {
+  const lastRow = pile.length - 1;
+
+  for (let i = 0; i < figure.length; i++) {
+    for (let j = 0; j < figure[i].length; j++) {
+      if (
+        figure[i][j] !== 0 &&
+        (i + row > lastRow || pile[i + row][j + col] !== 0)
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+export const isTetroOutsideField = (figure, row, col, pile) => {
+  for (let i = 0; i < figure.length; i++) {
+    for (let j = 0; j < figure[i].length; j++) {
+      const elRow = i + row;
+      const elCol = j + col;
+
+      if (
+        figure[i][j] !== 0 &&
+        (elRow < 0 || elRow >= pile.length || elCol < 0 || elCol >= RIGHT_LIMIT)
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+export const cannotMoveTetro = (figure, row, col, pile) =>
+  isTetroOutsideField(figure, row, col, pile) ||
+  wasPileCrossed(figure, row, col, pile);
+
+export const getRotatedFigure = figure => {
+  const rotatedFigure = JSON.parse(JSON.stringify(figure));
+
+  transposeSquareMatrix(rotatedFigure);
+  reverseSquareMatrixRows(rotatedFigure);
+  return rotatedFigure;
+};
+
+export const getPileWithTetro = (tetro, pile) => {
+  const { figure, row, col, color } = tetro;
+  const newPile = JSON.parse(JSON.stringify(pile));
+
+  figure.forEach((figureFow, rowIndex) =>
+    figureFow.forEach((_el, colIndex) => {
+      if (figure[rowIndex][colIndex] !== 0) {
+        newPile[rowIndex + row][colIndex + col] = color;
+      }
+    }),
+  );
+  return newPile;
+};
+
+export const getPileWithDropedTetro = (tetro, pile) => {
+  const { figure, col, color } = tetro;
+
+  for (let rowIndex = 0; rowIndex < pile.length; rowIndex++) {
+    if (wasPileCrossed(figure, rowIndex, col, pile)) {
+      const newPile = JSON.parse(JSON.stringify(pile));
+
+      figure.forEach((figureFow, figureRowIndex) =>
+        figureFow.forEach((_el, colIndex) => {
+          if (figure[figureRowIndex][colIndex] !== 0) {
+            newPile[figureRowIndex + rowIndex - 1][colIndex + col] = color;
+          }
+        }),
+      );
+      return newPile;
+    }
+  }
+  return pile;
+};
+
+export const isGameOver = (newTetro, pile) => {
+  const { figure, row, col } = newTetro;
+
+  for (let i = 0; i < figure.length; i++) {
+    for (let j = 0; j < figure[i].length; j++) {
+      if (pile[i + row][j + col] !== 0) {
+        return true;
+      }
+    }
+  }
+  return false;
+};

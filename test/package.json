@@ -5,7 +5,8 @@
   "main": "babel.config.js",
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:cover": "jest --coverage"
   },
   "author": "",
   "license": "ISC",
