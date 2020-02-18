@@ -4,7 +4,7 @@ import { Square } from '../Square';
 import {
   BOTTOM_LIMIT,
   RIGHT_LIMIT,
-  SHIFT,
+  SQUARE_WIDTH,
   PENALTY_COLOR,
   INVISIBLE_ROW_AMOUNT,
 } from '../../constants';
@@ -20,7 +20,8 @@ const InnerPenalty = ({ startRow }) => {
           top={rowIndex - INVISIBLE_ROW_AMOUNT}
           color={PENALTY_COLOR}
           key={`${rowIndex}+${colIndex}`}
-          shift={SHIFT}
+          shift={SQUARE_WIDTH}
+          borderWidth={SQUARE_WIDTH / 8}
         />,
       );
     }

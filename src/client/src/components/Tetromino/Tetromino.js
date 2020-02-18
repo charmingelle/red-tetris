@@ -1,7 +1,7 @@
 import React from 'react';
 import { Square } from '../Square';
 import { connect } from 'react-redux';
-import { SHIFT, INVISIBLE_ROW_AMOUNT } from '../../constants';
+import { SQUARE_WIDTH, INVISIBLE_ROW_AMOUNT } from '../../constants';
 
 export const TetrominoInner = ({ tetro }) => {
   if (tetro) {
@@ -19,7 +19,8 @@ export const TetrominoInner = ({ tetro }) => {
               top={squareRowIndex - INVISIBLE_ROW_AMOUNT}
               color={color}
               key={`${figureRowIndex}-${figureColIndex}`}
-              shift={SHIFT}
+              shift={SQUARE_WIDTH}
+              borderWidth={SQUARE_WIDTH / 8}
             />,
           );
         }

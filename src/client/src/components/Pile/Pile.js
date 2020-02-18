@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Square } from '../Square';
-import { SHIFT, INVISIBLE_ROW_AMOUNT } from '../../constants';
+import { SQUARE_WIDTH, INVISIBLE_ROW_AMOUNT } from '../../constants';
 
 const InnerPile = props => {
   return (
@@ -16,7 +16,8 @@ const InnerPile = props => {
                 top={rowIndex}
                 color={el}
                 key={`${rowIndex}+${colIndex}`}
-                shift={SHIFT}
+                shift={SQUARE_WIDTH}
+                borderWidth={SQUARE_WIDTH / 8}
               />
             ) : null,
           ),

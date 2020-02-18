@@ -5,6 +5,7 @@ exports.LINE = {
     [0, 0, 1, 0],
     [0, 0, 1, 0],
   ],
+  initRow: 0,
 };
 
 exports.GI = {

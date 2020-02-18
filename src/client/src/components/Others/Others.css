@@ -15,17 +15,14 @@
 
 .other-pile {
   position: relative;
-  width: 100px;
-  height: 200px;
   outline: 5px solid #999;
   background-color: black;
 }
 
 .other-game-over {
+  position: relative;
   display: flex;
   align-items: center;
-  width: 100px;
-  height: 200px;
   outline: 5px solid #999;
   background-color: #c00;
   color: #fff;

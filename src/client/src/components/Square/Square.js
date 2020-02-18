@@ -1,7 +1,7 @@
 import React from 'react';
 import './Square.css';
 
-export const Square = ({ left, top, color, shift }) => {
+export const Square = ({ left, top, color, shift, borderWidth }) => {
   const { main, lighter, darker } = color;
 
   return (
@@ -13,10 +13,10 @@ export const Square = ({ left, top, color, shift }) => {
         width: `${shift}px`,
         height: `${shift}px`,
         backgroundColor: main,
-        borderLeft: `5px solid ${lighter}`,
-        borderTop: `5px solid  ${lighter}`,
-        borderRight: `5px solid ${darker}`,
-        borderBottom: `5px solid ${darker}`,
+        borderLeft: `${borderWidth}px solid ${lighter}`,
+        borderTop: `${borderWidth}px solid  ${lighter}`,
+        borderRight: `${borderWidth}px solid ${darker}`,
+        borderBottom: `${borderWidth}px solid ${darker}`,
       }}
     ></div>
   );

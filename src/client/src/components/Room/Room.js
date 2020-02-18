@@ -8,7 +8,15 @@ import {
   dropTetro,
   rotateTetro,
 } from '../../actions';
-import { LEFT, RIGHT, DOWN, UP } from '../../constants';
+import {
+  LEFT,
+  RIGHT,
+  DOWN,
+  UP,
+  SQUARE_WIDTH,
+  WIDTH_IN_SQUARES,
+  HEIGHT_IN_SQUARES,
+} from '../../constants';
 import { Pile } from '../Pile';
 import { store } from '../../index';
 import { Others } from '../Others';
@@ -81,7 +89,14 @@ const Game = ({ isMyGameOver }) => (
 const Field = ({ myName, score, isMyGameOver }) => {
   return (
     <div className="field-container">
-      <div className="field" tabIndex={0}>
+      <div
+        className="field"
+        tabIndex={0}
+        style={{
+          width: `${SQUARE_WIDTH * WIDTH_IN_SQUARES}px`,
+          height: `${SQUARE_WIDTH * HEIGHT_IN_SQUARES}px`,
+        }}
+      >
         <Game isMyGameOver={isMyGameOver} />
       </div>
       <div className="my-score">{`${myName}: ${score}`}</div>

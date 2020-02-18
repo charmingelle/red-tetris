@@ -7,7 +7,6 @@ module.exports = class Connection {
     this.people = {};
 
     io.use((socket, next) => {
-      console.log(socket.id);
       next();
     });
 
@@ -194,7 +193,7 @@ module.exports = class Connection {
   getTetro(roomId, playerId) {
     const player = this.getRoomPlayer({ roomId, playerId });
 
-    if (player) {
+    if (player && player.game) {
       player.setTetro();
       this.io.to(playerId).emit('set-tetro', { tetro: player.tetro });
     }
@@ -252,22 +251,16 @@ module.exports = class Connection {
     this.deletePerson(socket);
     Object.keys(this.rooms).map(roomId => {
       const room = this.rooms[roomId];
-      const playerToRemove = this.getRoomPlayer({
-        roomId,
-        playerId: socket.id,
-      });
 
-      if (playerToRemove) {
-        room.removePlayer(socket.id);
-        socket.leave(roomId);
-        if (room.leader === socket.id && Object.keys(room.players).length) {
-          room.setLeader(Object.keys(room.players)[0]);
-        }
-        this.sendRoom(roomId);
-        if (!Object.keys(room.players).length) {
-          this.deleteRoom(roomId);
-        }
+      room.removePlayer(socket.id);
+      socket.leave(roomId);
+      if (!Object.keys(room.players).length) {
+        return this.deleteRoom(roomId);
       }
+      if (room.leader === socket.id) {
+        room.setLeader(Object.keys(room.players)[0]);
+      }
+      this.sendRoom(roomId);
     });
   }
 };

@@ -17,8 +17,10 @@ export const UPDATE_MY_ROOM_ID = 'UPDATE_MY_ROOM_ID';
 export const RIGHT_LIMIT = 10;
 export const BOTTOM_LIMIT = 23;
 export const INVISIBLE_ROW_AMOUNT = 3;
-export const SHIFT = 50;
-export const OTHER_SHIFT = 10;
+export const SQUARE_WIDTH = 40;
+export const OTHER_SQUARE_WIDTH = 8;
+export const WIDTH_IN_SQUARES = 10;
+export const HEIGHT_IN_SQUARES = 20;
 
 export const PENALTY_COLOR = {
   main: '#666666',

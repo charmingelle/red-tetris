@@ -3,7 +3,9 @@ import { connect } from 'react-redux';
 import './Others.css';
 import { Square } from '../Square';
 import {
-  OTHER_SHIFT,
+  OTHER_SQUARE_WIDTH,
+  WIDTH_IN_SQUARES,
+  HEIGHT_IN_SQUARES,
   BOTTOM_LIMIT,
   RIGHT_LIMIT,
   PENALTY_COLOR,
@@ -11,7 +13,15 @@ import {
 } from '../../constants';
 
 const renderOtherGameOver = () => (
-  <div className="other-game-over">GAME OVER</div>
+  <div
+    className="other-game-over"
+    style={{
+      width: `${OTHER_SQUARE_WIDTH * WIDTH_IN_SQUARES}px`,
+      height: `${OTHER_SQUARE_WIDTH * HEIGHT_IN_SQUARES}px`,
+    }}
+  >
+    GAME OVER
+  </div>
 );
 
 const renderOtherPenalty = startRow => {
@@ -25,7 +35,8 @@ const renderOtherPenalty = startRow => {
           top={rowIndex - INVISIBLE_ROW_AMOUNT}
           color={PENALTY_COLOR}
           key={`${rowIndex}+${colIndex}`}
-          shift={OTHER_SHIFT}
+          shift={OTHER_SQUARE_WIDTH}
+          borderWidth={OTHER_SQUARE_WIDTH / 8}
         />,
       );
     }
@@ -44,7 +55,8 @@ const renderOtherPile = pile =>
             top={rowIndex}
             color={el}
             key={`${rowIndex}+${colIndex}`}
-            shift={OTHER_SHIFT}
+            shift={OTHER_SQUARE_WIDTH}
+            borderWidth={OTHER_SQUARE_WIDTH / 8}
           />
         ) : null,
       ),
@@ -54,7 +66,13 @@ const renderOtherGame = (pile, isGameOver) =>
   isGameOver ? (
     renderOtherGameOver()
   ) : (
-    <div className="other-pile">
+    <div
+      className="other-pile"
+      style={{
+        width: `${OTHER_SQUARE_WIDTH * WIDTH_IN_SQUARES}px`,
+        height: `${OTHER_SQUARE_WIDTH * HEIGHT_IN_SQUARES}px`,
+      }}
+    >
       {renderOtherPile(pile)}
       {renderOtherPenalty(pile.length)}
     </div>

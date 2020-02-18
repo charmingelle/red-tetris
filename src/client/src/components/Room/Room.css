@@ -1,6 +1,7 @@
 .room {
   width: 100vw;
   height: 100vh;
+  max-height: 939px;
   display: flex;
 }
 
@@ -16,8 +17,6 @@
 
 .field {
   position: relative;
-  width: 500px;
-  height: 1000px;
   outline: 5px solid #f9f9f9;
   background-color: black;
 }
