@@ -28,6 +28,9 @@ import {
   getPileWithTetro,
   getPileWithDropedTetro,
   isGameOver,
+  removeRows,
+  getNewTetro,
+  finishGame,
 } from '../utils/game';
 
 export const io = socketIOClient({
@@ -58,48 +61,6 @@ const initialState = {
   tetro: null,
 };
 
-const removeRows = (pile, state) => {
-  const newPile = JSON.parse(JSON.stringify(pile));
-  let points = 0;
-
-  for (let rowIndex = pile.length - 1; rowIndex >= 0; rowIndex--) {
-    if (newPile[rowIndex].every(el => el !== 0)) {
-      newPile.splice(rowIndex, 1);
-      newPile.unshift(new Array(10).fill(0));
-      rowIndex++;
-      points++;
-    }
-  }
-  increaseMyScore(points, state);
-  setMyPile(newPile, state);
-};
-
-const getNewTetro = ({ socket, myRoomId, myId }) =>
-  socket.emit('get-tetro', {
-    roomId: myRoomId,
-    playerId: myId,
-  });
-
-const setMyPile = (pile, { socket, myRoomId, myId }) =>
-  socket.emit('set-pile', {
-    roomId: myRoomId,
-    playerId: myId,
-    pile,
-  });
-
-const increaseMyScore = (points, { socket, myRoomId, myId }) =>
-  socket.emit('increase-score', {
-    roomId: myRoomId,
-    playerId: myId,
-    points,
-  });
-
-const finishGame = ({ socket, myRoomId, myId }) =>
-  socket.emit('finish-game', {
-    roomId: myRoomId,
-    playerId: myId,
-  });
-
 const getMyPile = state => state.rooms[state.myRoomId].players[state.myId].pile;
 
 export const allReducers = (state = initialState, { type, payload }) => {
@@ -108,29 +69,23 @@ export const allReducers = (state = initialState, { type, payload }) => {
       return { ...state, myId: payload };
     }
     case LOAD_PEOPLE: {
-      const people = payload;
-
       return {
         ...state,
-        people,
-        myName: people[state.myId],
+        people: payload,
+        myName: payload[state.myId],
       };
     }
     case LOAD_ROOMS: {
       return { ...state, rooms: payload };
     }
     case LOAD_ROOM: {
-      const room = payload;
-
       return {
         ...state,
-        rooms: { ...state.room, [room.id]: room },
+        rooms: { ...state.rooms, [payload.id]: payload },
       };
     }
     case UPDATE_MY_ROOM_ID: {
-      const myRoomId = payload;
-
-      return { ...state, myRoomId };
+      return { ...state, myRoomId: payload };
     }
     case SET_TETRO: {
       const tetro = payload;

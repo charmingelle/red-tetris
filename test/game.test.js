@@ -5,6 +5,7 @@ import {
   getPileWithTetro,
   getPileWithDropedTetro,
   isGameOver,
+  getPileWithRemovedRowsAndPoints,
 } from '../src/client/src/utils/game';
 
 const LINE = [
@@ -98,6 +99,31 @@ const GAME_OVER_PILE = [
   [RED, RED, RED, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, RED, 0, 0, 0, 0, 0, 0, 0],
 ];
+const PILE_WITH_ROWS_TO_REMOVE = [
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [RED, RED, RED, RED, RED, RED, RED, RED, RED, RED],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [RED, RED, RED, RED, RED, RED, RED, RED, RED, RED],
+  [RED, RED, RED, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, RED, 0, 0, 0, 0, 0, 0, 0],
+];
 
 describe('Game', () => {
   test('wasPileCrossed', () => {
@@ -177,5 +203,21 @@ describe('Game', () => {
     expect(
       isGameOver({ figure: LINE, row: 0, col: 3, color: RED }, GAME_OVER_PILE),
     ).toBe(true);
+  });
+
+  test('getPileWithRemovedRowsAndPoints: 0 rows to remove', () => {
+    const { newPile, points } = getPileWithRemovedRowsAndPoints(NOT_EMPTY_PILE);
+
+    expect(newPile).toEqual(NOT_EMPTY_PILE);
+    expect(points).toBe(0);
+  });
+
+  test('getPileWithRemovedRowsAndPoints: 2 rows to remove', () => {
+    const { newPile, points } = getPileWithRemovedRowsAndPoints(
+      PILE_WITH_ROWS_TO_REMOVE,
+    );
+
+    expect(newPile).toEqual(NOT_EMPTY_PILE);
+    expect(points).toBe(2);
   });
 });

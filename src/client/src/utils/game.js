@@ -92,3 +92,53 @@ export const isGameOver = (newTetro, pile) => {
   }
   return false;
 };
+
+export const getPileWithRemovedRowsAndPoints = pile => {
+  const newPile = JSON.parse(JSON.stringify(pile));
+  let points = 0;
+
+  for (let rowIndex = pile.length - 1; rowIndex >= 0; rowIndex--) {
+    if (newPile[rowIndex].every(el => el !== 0)) {
+      newPile.splice(rowIndex, 1);
+      newPile.unshift(new Array(10).fill(0));
+      rowIndex++;
+      points++;
+    }
+  }
+  return { newPile, points };
+};
+
+export const removeRows = (pile, state) => {
+  const { newPile, points } = getPileWithRemovedRowsAndPoints(pile);
+
+  if (points) {
+    increaseMyScore(points, state);
+  }
+  setMyPile(newPile, state);
+};
+
+export const getNewTetro = ({ socket, myRoomId, myId }) =>
+  socket.emit('get-tetro', {
+    roomId: myRoomId,
+    playerId: myId,
+  });
+
+export const setMyPile = (pile, { socket, myRoomId, myId }) =>
+  socket.emit('set-pile', {
+    roomId: myRoomId,
+    playerId: myId,
+    pile,
+  });
+
+export const increaseMyScore = (points, { socket, myRoomId, myId }) =>
+  socket.emit('increase-score', {
+    roomId: myRoomId,
+    playerId: myId,
+    points,
+  });
+
+export const finishGame = ({ socket, myRoomId, myId }) =>
+  socket.emit('finish-game', {
+    roomId: myRoomId,
+    playerId: myId,
+  });
