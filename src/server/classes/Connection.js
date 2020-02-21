@@ -1,27 +1,34 @@
 const Room = require('./Room');
+const PubSub = require('./PubSub');
 
 module.exports = class Connection {
   constructor(io) {
     this.io = io;
     this.rooms = {};
     this.people = {};
+    this.pubSub = new PubSub();
 
-    io.use((socket, next) => {
-      next();
+    this.pubSub.subscribe('set-tetro', ({ playerId, tetro }) => {
+      this.io.to(playerId).emit('set-tetro', { tetro });
+    });
+    this.pubSub.subscribe('send-room', ({ roomId }) => {
+      this.io.to(roomId).emit('update-room', {
+        room: this.rooms[roomId].getRoomData(),
+      });
     });
 
     io.on('connection', socket => {
       this.sendLobbyOrRoom(socket);
 
-      socket.on('set-name', ({ name }) => this.addPerson(socket, name));
+      socket.on('set-name', ({ name }) => this.setName(socket, name));
       socket.on('create-room', ({ roomId }) => this.createRoom(socket, roomId));
       socket.on('join-room', ({ roomId }) => this.joinRoom(socket, roomId));
       socket.on('start-game', ({ roomId }) => this.startGame(socket, roomId));
       socket.on('get-tetro', ({ roomId, playerId }) =>
-        this.getTetro(roomId, playerId),
+        this.pubSub.publish(`get-tetro-${roomId}-${playerId}`),
       );
       socket.on('set-pile', ({ roomId, playerId, pile }) =>
-        this.setPile(roomId, playerId, pile),
+        this.pubSub.publish(`set-pile-${roomId}-${playerId}`, pile),
       );
       socket.on('increase-score', ({ roomId, playerId, points }) =>
         this.increaseScore(roomId, playerId, points),
@@ -76,7 +83,7 @@ module.exports = class Connection {
     });
   }
 
-  addPerson(socket, name) {
+  setName(socket, name) {
     this.people[socket.id] = name;
     this.sendPeople();
   }
@@ -138,6 +145,7 @@ module.exports = class Connection {
       id: roomId,
       leader: socket.id,
       players: {},
+      pubSub: this.pubSub,
     });
     this.sendRooms();
   }
@@ -190,38 +198,16 @@ module.exports = class Connection {
     return null;
   }
 
-  getTetro(roomId, playerId) {
-    const player = this.getRoomPlayer({ roomId, playerId });
-
-    if (player && player.game) {
-      player.setTetro();
-      this.io.to(playerId).emit('set-tetro', { tetro: player.tetro });
-    }
-  }
-
-  setPile(roomId, playerId, pile) {
-    const player = this.getRoomPlayer({ roomId, playerId });
-
-    if (player) {
-      player.setPile(pile);
-      this.sendRoom(roomId);
-    }
-  }
-
   increaseScore(roomId, playerId, points) {
-    const player = this.getRoomPlayer({ roomId, playerId });
+    this.pubSub.publish(`increase-score-${roomId}-${playerId}`, points);
 
-    if (player) {
-      const otherPlayerIds = Object.keys(this.rooms[roomId].players).filter(
-        id => id !== playerId,
-      );
+    const otherPlayerIds = Object.keys(this.rooms[roomId].players).filter(
+      id => id !== playerId,
+    );
 
-      player.increaseScore(points);
-      otherPlayerIds.forEach(id =>
-        this.rooms[roomId].players[id].receivePenalty(points),
-      );
-      this.sendRoom(roomId);
-    }
+    otherPlayerIds.forEach(id => {
+      this.pubSub.publish(`receive-penalty-${roomId}-${id}`, points);
+    });
   }
 
   isRoomGameOver(roomId) {
@@ -236,15 +222,7 @@ module.exports = class Connection {
   }
 
   finishGame(roomId, playerId) {
-    const player = this.getRoomPlayer({ roomId, playerId });
-
-    if (player) {
-      player.finishGame();
-      if (this.isRoomGameOver(roomId)) {
-        this.resetRoomGame(roomId, player.id);
-      }
-      this.sendRoom(roomId);
-    }
+    this.pubSub.publish(`finish-game-${roomId}-${playerId}`);
   }
 
   disconnect(socket) {
