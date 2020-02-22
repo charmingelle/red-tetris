@@ -1,15 +1,13 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Square } from '../Square';
 import {
   BOTTOM_LIMIT,
   RIGHT_LIMIT,
-  SQUARE_WIDTH,
   PENALTY_COLOR,
   INVISIBLE_ROW_AMOUNT,
 } from '../../constants';
 
-const InnerPenalty = ({ startRow }) => {
+export const Penalty = ({ startRow, squareWidth }) => {
   const penaltyRows = [];
 
   for (let rowIndex = startRow; rowIndex < BOTTOM_LIMIT; rowIndex++) {
@@ -20,17 +18,11 @@ const InnerPenalty = ({ startRow }) => {
           top={rowIndex - INVISIBLE_ROW_AMOUNT}
           color={PENALTY_COLOR}
           key={`${rowIndex}+${colIndex}`}
-          shift={SQUARE_WIDTH}
-          borderWidth={SQUARE_WIDTH / 8}
+          width={squareWidth}
+          borderWidth={squareWidth / 8}
         />,
       );
     }
   }
-  return <>{penaltyRows}</>;
+  return penaltyRows;
 };
-
-const mapStateToProps = ({ myId, myRoom }) => ({
-  startRow: myRoom.players[myId].pile.length,
-});
-
-export const Penalty = connect(mapStateToProps)(InnerPenalty);

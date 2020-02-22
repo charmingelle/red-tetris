@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import './Room.css';
-import { Tetromino } from '../Tetromino';
+import { Tetro } from '../Tetro';
 import {
   moveTetro,
   moveTetroDown,
@@ -77,16 +77,16 @@ const GameDetails = ({ socket, myId, roomId, leader, game }) =>
     </div>
   ) : null;
 
-const Game = ({ isMyGameOver }) => (
+const Game = ({ isMyGameOver, pile }) => (
   <>
-    <Tetromino />
-    <Pile />
-    <Penalty />
+    <Tetro />
+    <Pile pile={pile} squareWidth={SQUARE_WIDTH} />
+    <Penalty startRow={pile.length} squareWidth={SQUARE_WIDTH} />
     {isMyGameOver && <div className="game-over">GAME OVER</div>}
   </>
 );
 
-const Field = ({ myName, score, isMyGameOver }) => {
+const Field = ({ myName, score, isMyGameOver, pile }) => {
   return (
     <div className="field-container">
       <div
@@ -97,7 +97,7 @@ const Field = ({ myName, score, isMyGameOver }) => {
           height: `${SQUARE_WIDTH * HEIGHT_IN_SQUARES}px`,
         }}
       >
-        <Game isMyGameOver={isMyGameOver} />
+        <Game isMyGameOver={isMyGameOver} pile={pile} />
       </div>
       <div className="my-score">{`${myName}: ${score}`}</div>
     </div>
@@ -113,10 +113,16 @@ const RoomInner = ({
   game,
   score,
   isMyGameOver,
+  pile,
 }) => {
   return (
     <div className="room">
-      <Field myName={myName} score={score} isMyGameOver={isMyGameOver} />
+      <Field
+        myName={myName}
+        score={score}
+        isMyGameOver={isMyGameOver}
+        pile={pile}
+      />
       <div className="game-details-container">
         <GameDetails
           socket={socket}
@@ -140,6 +146,7 @@ const mapStateToProps = ({ socket, myId, myRoom, myName }) => {
     game: myRoom.game,
     score: myRoom.players[myId].score,
     isMyGameOver: myRoom.players[myId].isGameOver,
+    pile: myRoom.players[myId].pile,
   };
 };
 

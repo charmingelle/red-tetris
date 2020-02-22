@@ -1,0 +1,1 @@
+export { Tetro } from './Tetro';

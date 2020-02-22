@@ -3,7 +3,7 @@ import { Square } from '../Square';
 import { connect } from 'react-redux';
 import { SQUARE_WIDTH, INVISIBLE_ROW_AMOUNT } from '../../constants';
 
-export const TetrominoInner = ({ tetro }) => {
+export const TetroInner = ({ tetro }) => {
   if (tetro) {
     const { figure, row, col, color } = tetro;
     const squares = [];
@@ -19,18 +19,18 @@ export const TetrominoInner = ({ tetro }) => {
               top={squareRowIndex - INVISIBLE_ROW_AMOUNT}
               color={color}
               key={`${figureRowIndex}-${figureColIndex}`}
-              shift={SQUARE_WIDTH}
+              width={SQUARE_WIDTH}
               borderWidth={SQUARE_WIDTH / 8}
             />,
           );
         }
       }),
     );
-    return <>{squares}</>;
+    return squares;
   }
   return null;
 };
 
 const mapStateToProps = ({ tetro }) => ({ tetro });
 
-export const Tetromino = connect(mapStateToProps)(TetrominoInner);
+export const Tetro = connect(mapStateToProps)(TetroInner);

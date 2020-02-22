@@ -1,17 +1,17 @@
 import React from 'react';
 import './Square.css';
 
-export const Square = ({ left, top, color, shift, borderWidth }) => {
+export const Square = ({ left, top, color, width, borderWidth }) => {
   const { main, lighter, darker } = color;
 
   return (
     <div
       className="square"
       style={{
-        left: `${left * shift}px`,
-        top: `${top * shift}px`,
-        width: `${shift}px`,
-        height: `${shift}px`,
+        left: `${left * width}px`,
+        top: `${top * width}px`,
+        width: `${width}px`,
+        height: `${width}px`,
         backgroundColor: main,
         borderLeft: `${borderWidth}px solid ${lighter}`,
         borderTop: `${borderWidth}px solid  ${lighter}`,
