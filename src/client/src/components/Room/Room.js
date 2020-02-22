@@ -11,8 +11,9 @@ import {
 import {
   LEFT,
   RIGHT,
-  DOWN,
+  SPACE,
   UP,
+  DOWN,
   SQUARE_WIDTH,
   WIDTH_IN_SQUARES,
   HEIGHT_IN_SQUARES,
@@ -37,6 +38,10 @@ const keyDownHandler = ({ key }) => {
       break;
     }
     case DOWN: {
+      store.dispatch(moveTetro({ left: 0, top: 1 }));
+      break;
+    }
+    case SPACE: {
       store.dispatch(dropTetro());
       break;
     }

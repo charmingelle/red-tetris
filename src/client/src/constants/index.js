@@ -2,6 +2,7 @@ export const LEFT = 'ArrowLeft';
 export const RIGHT = 'ArrowRight';
 export const DOWN = 'ArrowDown';
 export const UP = 'ArrowUp';
+export const SPACE = ' ';
 
 export const UPDATE_MY_ID = 'UPDATE_MY_ID';
 export const UPDATE_PEOPLE = 'UPDATE_PEOPLE';
