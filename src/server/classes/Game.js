@@ -18,14 +18,8 @@ const {
 } = require('../constants/colors');
 
 module.exports = class Game {
-  constructor(room) {
-    this.room = room;
+  constructor() {
     this.tetros = [this.getRandomTetro()];
-
-    Object.values(this.room.players).forEach(player => {
-      player.setGame(this);
-      player.setTetro();
-    });
   }
 
   getTetro(tetroIndex) {

@@ -29,8 +29,8 @@ const InnerPenalty = ({ startRow }) => {
   return <>{penaltyRows}</>;
 };
 
-const mapStateToProps = ({ myId, myRoomId, rooms }) => ({
-  startRow: rooms[myRoomId].players[myId].pile.length,
+const mapStateToProps = ({ myId, myRoom }) => ({
+  startRow: myRoom.players[myId].pile.length,
 });
 
 export const Penalty = connect(mapStateToProps)(InnerPenalty);

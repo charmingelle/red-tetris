@@ -1,33 +1,38 @@
 import {
-  DROP_TETRO,
-  LOAD_PEOPLE,
-  LOAD_ROOM,
-  LOAD_ROOMS,
-  MOVE_TETRO,
-  MOVE_TETRO_DOWN,
-  ROTATE_TETR0,
-  SET_TETRO,
   UPDATE_MY_ID,
-  UPDATE_MY_ROOM_ID,
+  UPDATE_PEOPLE,
+  UPDATE_ROOMS,
+  UPDATE_ROOM,
+  UPDATE_TETRO,
+  MOVE_TETRO,
+  DROP_TETRO,
+  ROTATE_TETR0,
+  MOVE_TETRO_DOWN,
 } from '../constants';
 
-export const dropTetro = () => ({
-  type: DROP_TETRO,
+export const updateMyId = myId => ({
+  type: UPDATE_MY_ID,
+  payload: myId,
 });
 
-export const loadPeople = people => ({
-  type: LOAD_PEOPLE,
+export const updatePeople = people => ({
+  type: UPDATE_PEOPLE,
   payload: people,
 });
 
-export const loadRoom = room => ({
-  type: LOAD_ROOM,
+export const updateRooms = rooms => ({
+  type: UPDATE_ROOMS,
+  payload: rooms,
+});
+
+export const updateRoom = room => ({
+  type: UPDATE_ROOM,
   payload: room,
 });
 
-export const loadRooms = rooms => ({
-  type: LOAD_ROOMS,
-  payload: rooms,
+export const updateTetro = tetro => ({
+  type: UPDATE_TETRO,
+  payload: tetro,
 });
 
 export const moveTetro = ({ left, top }) => ({
@@ -35,25 +40,14 @@ export const moveTetro = ({ left, top }) => ({
   payload: { left, top },
 });
 
-export const moveTetroDown = () => ({
-  type: MOVE_TETRO_DOWN,
+export const dropTetro = () => ({
+  type: DROP_TETRO,
 });
 
 export const rotateTetro = () => ({
   type: ROTATE_TETR0,
 });
 
-export const setTetro = tetro => ({
-  type: SET_TETRO,
-  payload: tetro,
-});
-
-export const updateMyId = myId => ({
-  type: UPDATE_MY_ID,
-  payload: myId,
-});
-
-export const updateMyRoomId = myRoomId => ({
-  type: UPDATE_MY_ROOM_ID,
-  payload: myRoomId,
+export const moveTetroDown = () => ({
+  type: MOVE_TETRO_DOWN,
 });

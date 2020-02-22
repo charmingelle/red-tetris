@@ -130,15 +130,17 @@ const RoomInner = ({
   );
 };
 
-const mapStateToProps = ({ socket, myId, myRoomId, myName, rooms }) => ({
-  socket,
-  myId,
-  roomId: myRoomId,
-  myName,
-  leader: rooms[myRoomId].leader,
-  game: rooms[myRoomId].game,
-  score: rooms[myRoomId].players[myId].score,
-  isMyGameOver: rooms[myRoomId].players[myId].isGameOver,
-});
+const mapStateToProps = ({ socket, myId, myRoom, myName }) => {
+  return {
+    socket,
+    myId,
+    roomId: myRoom.id,
+    myName,
+    leader: myRoom.leader,
+    game: myRoom.game,
+    score: myRoom.players[myId].score,
+    isMyGameOver: myRoom.players[myId].isGameOver,
+  };
+};
 
 export const Room = connect(mapStateToProps)(RoomInner);

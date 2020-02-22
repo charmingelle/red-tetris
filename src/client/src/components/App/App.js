@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Lobby } from '../Lobby';
 import { Room } from '../Room';
 
-const AppInner = ({ myRoomId }) => (myRoomId ? <Room /> : <Lobby />);
+const AppInner = ({ myRoom }) => (myRoom ? <Room /> : <Lobby />);
 
-const mapStateToProps = ({ myRoomId }) => ({ myRoomId });
+const mapStateToProps = ({ myRoom }) => ({ myRoom });
 
 export const App = connect(mapStateToProps)(AppInner);

@@ -1,24 +1,22 @@
 import {
   UPDATE_MY_ID,
-  LOAD_PEOPLE,
-  LOAD_ROOM,
-  LOAD_ROOMS,
-  SET_TETRO,
+  UPDATE_PEOPLE,
+  UPDATE_ROOMS,
+  UPDATE_ROOM,
+  UPDATE_TETRO,
   MOVE_TETRO,
-  MOVE_TETRO_DOWN,
   DROP_TETRO,
   ROTATE_TETR0,
-  UPDATE_MY_ROOM_ID,
+  MOVE_TETRO_DOWN,
 } from '../constants';
 import socketIOClient from 'socket.io-client';
 import { store } from '../index';
 import {
-  loadPeople,
-  loadRooms,
-  loadRoom,
+  updatePeople,
+  updateRooms,
+  updateRoom,
   updateMyId,
-  setTetro,
-  updateMyRoomId,
+  updateTetro,
 } from '../actions';
 import { getRoomIdAndPlayerName } from '../utils/common';
 import {
@@ -37,57 +35,50 @@ export const io = socketIOClient({
   query: getRoomIdAndPlayerName(window.location.hash),
 });
 
-io.on('update-people', ({ people }) => store.dispatch(loadPeople(people)));
+io.on('update-my-id', ({ id }) => store.dispatch(updateMyId(id)));
 
-io.on('update-rooms', ({ rooms }) => store.dispatch(loadRooms(rooms)));
+io.on('update-people', ({ people }) => store.dispatch(updatePeople(people)));
 
-io.on('send-id', ({ id }) => store.dispatch(updateMyId(id)));
+io.on('update-rooms', ({ rooms }) => store.dispatch(updateRooms(rooms)));
 
-io.on('update-room', ({ room }) => store.dispatch(loadRoom(room)));
+io.on('update-room', ({ room }) => store.dispatch(updateRoom(room)));
 
-io.on('set-tetro', ({ tetro }) => store.dispatch(setTetro(tetro)));
-
-io.on('update-my-room-id', ({ myRoomId }) =>
-  store.dispatch(updateMyRoomId(myRoomId)),
-);
+io.on('update-tetro', ({ tetro }) => store.dispatch(updateTetro(tetro)));
 
 const initialState = {
   socket: io,
   myId: null,
-  myRoomId: undefined,
   myName: null,
+  myRoom: null,
   people: {},
   rooms: {},
   tetro: null,
 };
 
-const getMyPile = state => state.rooms[state.myRoomId].players[state.myId].pile;
+const getMyPile = state => state.myRoom.players[state.myId].pile;
 
 export const allReducers = (state = initialState, { type, payload }) => {
   switch (type) {
     case UPDATE_MY_ID: {
       return { ...state, myId: payload };
     }
-    case LOAD_PEOPLE: {
+    case UPDATE_PEOPLE: {
       return {
         ...state,
         people: payload,
         myName: payload[state.myId],
       };
     }
-    case LOAD_ROOMS: {
+    case UPDATE_ROOMS: {
       return { ...state, rooms: payload };
     }
-    case LOAD_ROOM: {
+    case UPDATE_ROOM: {
       return {
         ...state,
-        rooms: { ...state.rooms, [payload.id]: payload },
+        myRoom: payload,
       };
     }
-    case UPDATE_MY_ROOM_ID: {
-      return { ...state, myRoomId: payload };
-    }
-    case SET_TETRO: {
+    case UPDATE_TETRO: {
       const tetro = payload;
       const pile = getMyPile(state);
 

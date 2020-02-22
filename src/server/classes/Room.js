@@ -2,20 +2,53 @@ const Player = require('./Player');
 const Game = require('./Game');
 
 module.exports = class Room {
-  constructor({ id, leader, players = {}, pubSub }) {
+  constructor({ id, leader, players = {}, io, pubSub }) {
     this.id = id;
     this.leader = leader;
     this.players = players;
     this.game = null;
+    this.io = io;
     this.pubSub = pubSub;
-    this.pubSub.subscribe(`player-game-finish-${this.id}`, playerId => {
-      if (this.isGameOver()) {
-        console.log('room game is over');
-        this.game = null;
-        this.leader = playerId;
+    this.pubSub.subscribe(`disconnect-player-${this.id}`, playerId => {
+      this.removePlayer(playerId);
+      if (!Object.keys(this.players).length) {
+        return this.pubSub.publish('delete-room', this.id);
       }
-      this.pubSub.publish('send-room', { roomId: this.id });
+      if (this.leader === playerId) {
+        this.setLeader(Object.keys(this.players)[0]);
+      }
+      this.send();
     });
+  }
+
+  getPlayerTetro(playerId) {
+    this.players[playerId].setTetro();
+  }
+
+  setPlayerPile(playerId, pile) {
+    this.players[playerId].setPile(pile);
+    this.send();
+  }
+
+  increasePlayerScore(playerId, points) {
+    this.players[playerId].increaseScore(points);
+    Object.values(this.players)
+      .filter(({ id }) => id !== playerId)
+      .forEach(player => player.receivePenalty(points));
+    this.send();
+  }
+
+  finishPlayerGame(playerId) {
+    this.players[playerId].finishGame();
+    if (this.isGameOver()) {
+      this.game = null;
+      this.leader = playerId;
+    }
+    this.send();
+  }
+
+  send() {
+    this.io.in(this.id).emit('update-room', { room: this.getRoomData() });
   }
 
   isGameOver() {
@@ -27,6 +60,7 @@ module.exports = class Room {
       id: playerId,
       name: playerName,
       roomId: this.id,
+      io: this.io,
       pubSub: this.pubSub,
     });
   }
@@ -40,11 +74,23 @@ module.exports = class Room {
   }
 
   startGame() {
+    this.resetPlayerGames();
     this.game = new Game(this);
+    Object.values(this.players).forEach(player => {
+      player.setGame(this.game);
+    });
+    this.send();
+    Object.values(this.players).forEach(player => {
+      player.setTetro();
+    });
   }
 
   endGame() {
     this.game = null;
+  }
+
+  resetPlayerGames() {
+    Object.values(this.players).forEach(player => player.init());
   }
 
   getRoomData() {

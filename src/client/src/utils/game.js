@@ -117,28 +117,28 @@ export const removeRows = (pile, state) => {
   setMyPile(newPile, state);
 };
 
-export const getNewTetro = ({ socket, myRoomId, myId }) =>
+export const getNewTetro = ({ socket, myRoom, myId }) =>
   socket.emit('get-tetro', {
-    roomId: myRoomId,
+    roomId: myRoom.id,
     playerId: myId,
   });
 
-export const setMyPile = (pile, { socket, myRoomId, myId }) =>
+export const setMyPile = (pile, { socket, myRoom, myId }) =>
   socket.emit('set-pile', {
-    roomId: myRoomId,
+    roomId: myRoom.id,
     playerId: myId,
     pile,
   });
 
-export const increaseMyScore = (points, { socket, myRoomId, myId }) =>
+export const increaseMyScore = (points, { socket, myRoom, myId }) =>
   socket.emit('increase-score', {
-    roomId: myRoomId,
+    roomId: myRoom.id,
     playerId: myId,
     points,
   });
 
-export const finishGame = ({ socket, myRoomId, myId }) =>
+export const finishGame = ({ socket, myRoom, myId }) =>
   socket.emit('finish-game', {
-    roomId: myRoomId,
+    roomId: myRoom.id,
     playerId: myId,
   });

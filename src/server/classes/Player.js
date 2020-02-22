@@ -1,41 +1,16 @@
 const { PILE } = require('../constants/shapes');
 
 module.exports = class Player {
-  constructor({ id, name, roomId, pubSub }) {
+  constructor({ id, name, roomId, io, pubSub }) {
     this.id = id;
     this.name = name;
     this.roomId = roomId;
+    this.io = io;
     this.pubSub = pubSub;
     this.init();
-    this.pubSub.subscribe(`get-tetro-${this.roomId}-${this.id}`, () => {
-      this.setTetro();
-      this.pubSub.publish('set-tetro', {
-        playerId: this.id,
-        tetro: this.tetro,
-      });
-    });
-    this.pubSub.subscribe(`set-pile-${this.roomId}-${this.id}`, pile => {
-      this.setPile(pile);
-      this.pubSub.publish('send-room', { roomId });
-    });
-    this.pubSub.subscribe(
-      `increase-score-${this.roomId}-${this.id}`,
-      points => {
-        this.increaseScore(points);
-        this.pubSub.publish('send-room', { roomId });
-      },
+    this.pubSub.subscribe(`disconnect-${this.id}`, () =>
+      this.pubSub.publish(`disconnect-player-${this.roomId}`, this.id),
     );
-    this.pubSub.subscribe(
-      `receive-penalty-${this.roomId}-${this.id}`,
-      points => {
-        this.receivePenalty(points);
-        this.pubSub.publish('send-room', { roomId });
-      },
-    );
-    this.pubSub.subscribe(`finish-game-${this.roomId}-${this.id}`, () => {
-      this.finishGame();
-      this.pubSub.publish(`player-game-finish-${this.roomId}`, this.id);
-    });
   }
 
   init() {
@@ -55,6 +30,7 @@ module.exports = class Player {
     if (!this.isGameOver) {
       this.tetroIndex += 1;
       this.tetro = this.game.getTetro(this.tetroIndex);
+      this.io.to(this.id).emit('update-tetro', { tetro: this.tetro });
     }
   }
 

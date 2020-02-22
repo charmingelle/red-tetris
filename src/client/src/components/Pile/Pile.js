@@ -26,8 +26,8 @@ const InnerPile = props => {
   );
 };
 
-const mapStateToProps = ({ myId, myRoomId, rooms }) => ({
-  pile: rooms[myRoomId].players[myId].pile,
+const mapStateToProps = ({ myId, myRoom }) => ({
+  pile: myRoom.players[myId].pile,
 });
 
 export const Pile = connect(mapStateToProps)(InnerPile);

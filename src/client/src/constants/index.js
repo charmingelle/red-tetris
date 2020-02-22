@@ -4,15 +4,15 @@ export const DOWN = 'ArrowDown';
 export const UP = 'ArrowUp';
 
 export const UPDATE_MY_ID = 'UPDATE_MY_ID';
-export const LOAD_PEOPLE = 'LOAD_PEOPLE';
-export const LOAD_ROOMS = 'LOAD_ROOMS';
-export const LOAD_ROOM = 'LOAD_ROOM';
-export const SET_TETRO = 'SET_TETRO';
+export const UPDATE_PEOPLE = 'UPDATE_PEOPLE';
+export const UPDATE_ROOMS = 'UPDATE_ROOMS';
+export const UPDATE_ROOM = 'UPDATE_ROOM';
+export const UPDATE_TETRO = 'UPDATE_TETRO';
+
 export const MOVE_TETRO = 'MOVE_TETRO';
-export const MOVE_TETRO_DOWN = 'MOVE_TETRO_DOWN';
 export const DROP_TETRO = 'DROP_TETRO';
 export const ROTATE_TETR0 = 'ROTATE_TETRO';
-export const UPDATE_MY_ROOM_ID = 'UPDATE_MY_ROOM_ID';
+export const MOVE_TETRO_DOWN = 'MOVE_TETRO_DOWN';
 
 export const RIGHT_LIMIT = 10;
 export const BOTTOM_LIMIT = 23;
