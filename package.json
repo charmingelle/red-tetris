@@ -14,9 +14,11 @@
     "init:client": "cd src/client && npm i",
     "init:test": "cd test && npm i",
     "init": "npm i && npm run init:test && npm run init:server && npm run init:client",
+    "build": "cd src/client && npm run build",
     "clean:server": "cd src/server && rm -rf node_modules",
     "clean:client": "cd src/client && rm -rf node_modules",
     "clean": "npm run clean:server && npm run clean:client",
+    "start": "cd src/server && npm run start",
     "start:dev": "concurrently 'cd src/server && npm run start:dev' 'cd src/client && npm run start'"
   },
   "repository": {
