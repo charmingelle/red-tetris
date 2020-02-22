@@ -13,13 +13,18 @@ module.exports = class Connection {
       this.sendRoomsToAll();
     });
 
+    this.pubSub.subscribe('increase-person-score', ({ id, score }) => {
+      this.people[id].score += score;
+      this.sendPeopleToAll();
+    });
+
     io.on('connection', socket => {
       this.sendMyIdToMe(socket);
 
       const { roomId, playerName } = socket.request._query;
 
       if (roomId && playerName) {
-        this.people[socket.id] = playerName;
+        this.people[socket.id] = { name: playerName, score: 0 };
         this.sendPeopleToAll();
         if (!this.rooms[roomId]) {
           this.createRoom(socket, roomId);
@@ -29,7 +34,7 @@ module.exports = class Connection {
       }
 
       socket.on('set-name', ({ name }) => {
-        this.people[socket.id] = name;
+        this.people[socket.id] = { name, score: 0 };
         this.sendPeopleToAll();
       });
       socket.on('create-room', ({ roomId }) => {
@@ -79,7 +84,7 @@ module.exports = class Connection {
     const room = this.rooms[roomId];
 
     if (room && !room.game) {
-      room.addPlayer(socket.id, this.people[socket.id]);
+      room.addPlayer(socket.id, this.people[socket.id].name);
       socket.join(roomId);
       room.send();
     }

@@ -21,13 +21,13 @@ const LobbyPeopleInner = ({ people }) => (
     <div className="lobby-people-label">Players</div>
     <div className="lobby-people-list">
       {Object.keys(people)
-        .reverse()
+        .sort((id1, id2) => people[id2].score - people[id1].score)
         .map(id => (
           <div
             key={id}
             className="lobby-person-name"
             style={{ color: getRandomColor() }}
-          >{`${people[id]}`}</div>
+          >{`${people[id].name} - ${people[id].score}`}</div>
         ))}
     </div>
   </div>

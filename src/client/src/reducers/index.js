@@ -66,7 +66,7 @@ export const allReducers = (state = initialState, { type, payload }) => {
       return {
         ...state,
         people: payload,
-        myName: payload[state.myId],
+        myName: payload[state.myId].name,
       };
     }
     case UPDATE_ROOMS: {

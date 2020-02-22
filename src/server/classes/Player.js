@@ -53,6 +53,12 @@ module.exports = class Player {
 
   finishGame() {
     this.isGameOver = true;
+    if (this.score) {
+      this.pubSub.publish('increase-person-score', {
+        id: this.id,
+        score: this.score,
+      });
+    }
   }
 
   getScore() {
