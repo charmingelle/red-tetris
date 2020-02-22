@@ -1,0 +1,168 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`No penalty 1`] = `null`;
+
+exports[`One penalty row 1`] = `
+Array [
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#666666",
+        "borderBottom": "1px solid #333",
+        "borderLeft": "1px solid #999",
+        "borderRight": "1px solid #333",
+        "borderTop": "1px solid  #999",
+        "height": "8px",
+        "left": "72px",
+        "top": "152px",
+        "width": "8px",
+      }
+    }
+  />,
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#666666",
+        "borderBottom": "1px solid #333",
+        "borderLeft": "1px solid #999",
+        "borderRight": "1px solid #333",
+        "borderTop": "1px solid  #999",
+        "height": "8px",
+        "left": "64px",
+        "top": "152px",
+        "width": "8px",
+      }
+    }
+  />,
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#666666",
+        "borderBottom": "1px solid #333",
+        "borderLeft": "1px solid #999",
+        "borderRight": "1px solid #333",
+        "borderTop": "1px solid  #999",
+        "height": "8px",
+        "left": "56px",
+        "top": "152px",
+        "width": "8px",
+      }
+    }
+  />,
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#666666",
+        "borderBottom": "1px solid #333",
+        "borderLeft": "1px solid #999",
+        "borderRight": "1px solid #333",
+        "borderTop": "1px solid  #999",
+        "height": "8px",
+        "left": "48px",
+        "top": "152px",
+        "width": "8px",
+      }
+    }
+  />,
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#666666",
+        "borderBottom": "1px solid #333",
+        "borderLeft": "1px solid #999",
+        "borderRight": "1px solid #333",
+        "borderTop": "1px solid  #999",
+        "height": "8px",
+        "left": "40px",
+        "top": "152px",
+        "width": "8px",
+      }
+    }
+  />,
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#666666",
+        "borderBottom": "1px solid #333",
+        "borderLeft": "1px solid #999",
+        "borderRight": "1px solid #333",
+        "borderTop": "1px solid  #999",
+        "height": "8px",
+        "left": "32px",
+        "top": "152px",
+        "width": "8px",
+      }
+    }
+  />,
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#666666",
+        "borderBottom": "1px solid #333",
+        "borderLeft": "1px solid #999",
+        "borderRight": "1px solid #333",
+        "borderTop": "1px solid  #999",
+        "height": "8px",
+        "left": "24px",
+        "top": "152px",
+        "width": "8px",
+      }
+    }
+  />,
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#666666",
+        "borderBottom": "1px solid #333",
+        "borderLeft": "1px solid #999",
+        "borderRight": "1px solid #333",
+        "borderTop": "1px solid  #999",
+        "height": "8px",
+        "left": "16px",
+        "top": "152px",
+        "width": "8px",
+      }
+    }
+  />,
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#666666",
+        "borderBottom": "1px solid #333",
+        "borderLeft": "1px solid #999",
+        "borderRight": "1px solid #333",
+        "borderTop": "1px solid  #999",
+        "height": "8px",
+        "left": "8px",
+        "top": "152px",
+        "width": "8px",
+      }
+    }
+  />,
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#666666",
+        "borderBottom": "1px solid #333",
+        "borderLeft": "1px solid #999",
+        "borderRight": "1px solid #333",
+        "borderTop": "1px solid  #999",
+        "height": "8px",
+        "left": "0px",
+        "top": "152px",
+        "width": "8px",
+      }
+    }
+  />,
+]
+`;

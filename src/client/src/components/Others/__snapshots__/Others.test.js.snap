@@ -1,0 +1,109 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Others in room with 3 players 1`] = `
+<ul
+  className="others"
+>
+  <li
+    className="other"
+  >
+    <div
+      className="other-pile"
+      style={
+        Object {
+          "height": "160px",
+          "width": "80px",
+        }
+      }
+    >
+      <div
+        className="square"
+        style={
+          Object {
+            "backgroundColor": "#c00",
+            "borderBottom": "1px solid #980000",
+            "borderLeft": "1px solid #f00",
+            "borderRight": "1px solid #980000",
+            "borderTop": "1px solid  #f00",
+            "height": "8px",
+            "left": "0px",
+            "top": "144px",
+            "width": "8px",
+          }
+        }
+      />
+      <div
+        className="square"
+        style={
+          Object {
+            "backgroundColor": "#c00",
+            "borderBottom": "1px solid #980000",
+            "borderLeft": "1px solid #f00",
+            "borderRight": "1px solid #980000",
+            "borderTop": "1px solid  #f00",
+            "height": "8px",
+            "left": "8px",
+            "top": "144px",
+            "width": "8px",
+          }
+        }
+      />
+      <div
+        className="square"
+        style={
+          Object {
+            "backgroundColor": "#c00",
+            "borderBottom": "1px solid #980000",
+            "borderLeft": "1px solid #f00",
+            "borderRight": "1px solid #980000",
+            "borderTop": "1px solid  #f00",
+            "height": "8px",
+            "left": "16px",
+            "top": "144px",
+            "width": "8px",
+          }
+        }
+      />
+      <div
+        className="square"
+        style={
+          Object {
+            "backgroundColor": "#c00",
+            "borderBottom": "1px solid #980000",
+            "borderLeft": "1px solid #f00",
+            "borderRight": "1px solid #980000",
+            "borderTop": "1px solid  #f00",
+            "height": "8px",
+            "left": "16px",
+            "top": "152px",
+            "width": "8px",
+          }
+        }
+      />
+    </div>
+    <div
+      className="score"
+    >
+      Olya: 0
+    </div>
+  </li>
+  <li
+    className="other"
+  >
+    <div
+      className="other-pile"
+      style={
+        Object {
+          "height": "160px",
+          "width": "80px",
+        }
+      }
+    />
+    <div
+      className="score"
+    >
+      Dasha: 0
+    </div>
+  </li>
+</ul>
+`;

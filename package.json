@@ -7,9 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "cd test && npm run test",
-    "test:watch": "cd test && npm run test:watch",
-    "test:cover": "cd test && npm run test:cover",
+    "test": "cd src/client && npm run test",
+    "test:cover": "cd src/client && npm run test:cover",
     "init:server": "cd src/server && npm i",
     "init:client": "cd src/client && npm i",
     "init:test": "cd test && npm i",

@@ -1,1 +1,0 @@
-export { LobbyPeople } from './LobbyPeople';

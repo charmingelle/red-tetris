@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EnterNameForm 1`] = `
+<div
+  className="enter-name-form"
+>
+  <div
+    className="enter-name-label"
+  >
+    What's your name?
+  </div>
+  <input
+    className="enter-name-input"
+    maxLength="15"
+    onChange={[Function]}
+    onKeyPress={[Function]}
+    placeholder="Enter name..."
+    type="text"
+    value=""
+  />
+  <button
+    className="enter-name-button"
+    onClick={[Function]}
+  >
+    Confirm
+  </button>
+</div>
+`;

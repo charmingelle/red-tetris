@@ -3,7 +3,7 @@ import {
   getRoomIdAndPlayerName,
   transposeSquareMatrix,
   reverseSquareMatrixRows,
-} from '../src/client/src/utils/common';
+} from './common';
 
 describe('Utils', () => {
   test('isNameValid', () => {

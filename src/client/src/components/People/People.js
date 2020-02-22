@@ -1,22 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import './LobbyPeople.css';
+import './People.css';
 
-const getRandomColor = () => {
-  const colors = [
-    '#c00',
-    '#f77700',
-    '#cccc00',
-    '#129c0a',
-    '#06cccc',
-    '#0d05f3',
-    '#9901cc',
-  ];
+const getColor = (personId, myId) => (personId === myId ? '#c00' : '#f9f9f9');
 
-  return colors[Math.floor(Math.random() * colors.length)];
-};
-
-const LobbyPeopleInner = ({ people }) => (
+const PeopleInner = ({ people, myId }) => (
   <div className="lobby-people">
     <div className="lobby-people-label">Players</div>
     <div className="lobby-people-list">
@@ -26,13 +14,13 @@ const LobbyPeopleInner = ({ people }) => (
           <div
             key={id}
             className="lobby-person-name"
-            style={{ color: getRandomColor() }}
+            style={{ color: getColor(id, myId) }}
           >{`${people[id].name} - ${people[id].score}`}</div>
         ))}
     </div>
   </div>
 );
 
-const mapStateToProps = ({ people }) => ({ people });
+const mapStateToProps = ({ people, myId }) => ({ people, myId });
 
-export const LobbyPeople = connect(mapStateToProps)(LobbyPeopleInner);
+export const People = connect(mapStateToProps)(PeopleInner);

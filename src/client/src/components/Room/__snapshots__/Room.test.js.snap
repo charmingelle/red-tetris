@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Room 1`] = `
+<div
+  className="room"
+>
+  <div
+    className="field-container"
+  >
+    <div
+      className="field"
+      style={
+        Object {
+          "height": "800px",
+          "width": "400px",
+        }
+      }
+      tabIndex={0}
+    />
+    <div
+      className="my-score"
+    >
+      Anna: 0
+    </div>
+  </div>
+  <div
+    className="game-details-container"
+  >
+    <div
+      className="game-details"
+    >
+      <button
+        className="start-game-button"
+        onClick={[Function]}
+      >
+        START
+      </button>
+      <ul
+        className="others"
+      />
+    </div>
+  </div>
+</div>
+`;

@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CreateRoomForm 1`] = `
+<div
+  className="create-room-form"
+>
+  <div
+    className="create-room-label"
+  >
+    Create own room
+  </div>
+  <input
+    className="create-room-input"
+    maxLength="15"
+    onChange={[Function]}
+    onKeyPress={[Function]}
+    placeholder="Enter name..."
+    type="text"
+    value=""
+  />
+  <button
+    className="create-room-button"
+    onClick={[Function]}
+  >
+    Create
+  </button>
+</div>
+`;

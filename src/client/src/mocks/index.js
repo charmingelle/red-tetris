@@ -1,30 +1,23 @@
-import {
-  wasPileCrossed,
-  isTetroOutsideField,
-  getRotatedFigure,
-  getPileWithTetro,
-  getPileWithDropedTetro,
-  isGameOver,
-  getPileWithRemovedRowsAndPoints,
-} from '../src/client/src/utils/game';
-
-const LINE = [
-  [0, 0, 1, 0],
-  [0, 0, 1, 0],
-  [0, 0, 1, 0],
-  [0, 0, 1, 0],
-];
-const GI = [
-  [0, 0, 0],
-  [1, 1, 1],
-  [0, 0, 1],
-];
-const RED = {
+export const RED = {
   main: '#c00',
   lighter: '#f00',
   darker: '#980000',
 };
-const EMPTY_PILE = [
+
+export const LINE = [
+  [0, 0, 1, 0],
+  [0, 0, 1, 0],
+  [0, 0, 1, 0],
+  [0, 0, 1, 0],
+];
+
+export const GI = [
+  [0, 0, 0],
+  [1, 1, 1],
+  [0, 0, 1],
+];
+
+export const EMPTY_PILE = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -49,7 +42,8 @@ const EMPTY_PILE = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
-const NOT_EMPTY_PILE = [
+
+export const NOT_EMPTY_PILE = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -74,7 +68,8 @@ const NOT_EMPTY_PILE = [
   [RED, RED, RED, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, RED, 0, 0, 0, 0, 0, 0, 0],
 ];
-const GAME_OVER_PILE = [
+
+export const GAME_OVER_PILE = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -99,7 +94,8 @@ const GAME_OVER_PILE = [
   [RED, RED, RED, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, RED, 0, 0, 0, 0, 0, 0, 0],
 ];
-const PILE_WITH_ROWS_TO_REMOVE = [
+
+export const PILE_WITH_ROWS_TO_REMOVE = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -125,99 +121,38 @@ const PILE_WITH_ROWS_TO_REMOVE = [
   [0, 0, RED, 0, 0, 0, 0, 0, 0, 0],
 ];
 
-describe('Game', () => {
-  test('wasPileCrossed', () => {
-    expect(wasPileCrossed(LINE, 0, 0, EMPTY_PILE)).toBe(false);
-    expect(wasPileCrossed(LINE, 20, 0, EMPTY_PILE)).toBe(true);
-    expect(wasPileCrossed(LINE, 17, 0, NOT_EMPTY_PILE)).toBe(false);
-    expect(wasPileCrossed(LINE, 18, 0, NOT_EMPTY_PILE)).toBe(true);
-  });
+export const TETRO = {
+  figure: [GI],
+  row: 5,
+  col: 4,
+  color: RED,
+};
 
-  test('isTetroOutsideField', () => {
-    expect(isTetroOutsideField(LINE, -1, 0, EMPTY_PILE)).toBe(true);
-    expect(isTetroOutsideField(LINE, 0, -3, EMPTY_PILE)).toBe(true);
-    expect(isTetroOutsideField(LINE, 20, 0, EMPTY_PILE)).toBe(true);
-    expect(isTetroOutsideField(LINE, 0, 8, EMPTY_PILE)).toBe(true);
-    expect(isTetroOutsideField(LINE, 10, 3, EMPTY_PILE)).toBe(false);
-  });
+export const ROOM = {
+  id: 'Room',
+  leader: 'id-0',
+  players: {
+    'id-0': {
+      id: 'id-0',
+      name: 'Anna',
+      pile: EMPTY_PILE,
+      tetro: null,
+      score: 0,
+      isGameOver: false,
+    },
+  },
+};
 
-  test('getRotatedFigure', () => {
-    expect(
-      getRotatedFigure([
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-      ]),
-    ).toEqual([
-      [0, 0, 0, 0],
-      [1, 1, 1, 1],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ]);
-    expect(
-      getRotatedFigure([
-        [0, 0, 0],
-        [0, 1, 1],
-        [1, 1, 0],
-      ]),
-    ).toEqual([
-      [0, 1, 0],
-      [0, 1, 1],
-      [0, 0, 1],
-    ]);
-  });
+export const EMPTY_STORE = {
+  socket: null,
+  myId: null,
+  myName: null,
+  myRoom: null,
+  people: {},
+  rooms: {},
+  tetro: null,
+};
 
-  test('getPileWithTetro', () => {
-    expect(
-      getPileWithTetro(
-        {
-          figure: GI,
-          row: 20,
-          col: 0,
-          color: RED,
-        },
-        EMPTY_PILE,
-      ),
-    ).toEqual(NOT_EMPTY_PILE);
-  });
+export const PERSON_ANNA = { name: 'Anna', score: 0 };
 
-  test('getPileWithDropedTetro', () => {
-    expect(
-      getPileWithDropedTetro(
-        {
-          figure: GI,
-          row: 0,
-          col: 0,
-          color: RED,
-        },
-        EMPTY_PILE,
-      ),
-    ).toEqual(NOT_EMPTY_PILE);
-  });
-
-  test('isGameOver', () => {
-    expect(
-      isGameOver({ figure: LINE, row: 0, col: 0, color: RED }, EMPTY_PILE),
-    ).toBe(false);
-    expect(
-      isGameOver({ figure: LINE, row: 0, col: 3, color: RED }, GAME_OVER_PILE),
-    ).toBe(true);
-  });
-
-  test('getPileWithRemovedRowsAndPoints: 0 rows to remove', () => {
-    const { newPile, points } = getPileWithRemovedRowsAndPoints(NOT_EMPTY_PILE);
-
-    expect(newPile).toEqual(NOT_EMPTY_PILE);
-    expect(points).toBe(0);
-  });
-
-  test('getPileWithRemovedRowsAndPoints: 2 rows to remove', () => {
-    const { newPile, points } = getPileWithRemovedRowsAndPoints(
-      PILE_WITH_ROWS_TO_REMOVE,
-    );
-
-    expect(newPile).toEqual(NOT_EMPTY_PILE);
-    expect(points).toBe(2);
-  });
-});
+export const PERSON_OLYA = { name: 'Olya', score: 0 };

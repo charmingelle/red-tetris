@@ -1,0 +1,96 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`App rendering Lobby 1`] = `
+<div
+  className="lobby"
+>
+  <div
+    className="lobby-left"
+  >
+    <div
+      className="room-list"
+    >
+      <div
+        className="no-rooms-label"
+      >
+        No rooms available yet
+      </div>
+    </div>
+  </div>
+  <div
+    className="lobby-right"
+  >
+    <div
+      className="enter-name-form-container"
+    >
+      <div
+        className="enter-name-form"
+      >
+        <div
+          className="enter-name-label"
+        >
+          What's your name?
+        </div>
+        <input
+          className="enter-name-input"
+          maxLength="15"
+          onChange={[Function]}
+          onKeyPress={[Function]}
+          placeholder="Enter name..."
+          type="text"
+          value=""
+        />
+        <button
+          className="enter-name-button"
+          onClick={[Function]}
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`App rendering Room 1`] = `
+<div
+  className="room"
+>
+  <div
+    className="field-container"
+  >
+    <div
+      className="field"
+      style={
+        Object {
+          "height": "800px",
+          "width": "400px",
+        }
+      }
+      tabIndex={0}
+    />
+    <div
+      className="my-score"
+    >
+      Anna: 0
+    </div>
+  </div>
+  <div
+    className="game-details-container"
+  >
+    <div
+      className="game-details"
+    >
+      <button
+        className="start-game-button"
+        onClick={[Function]}
+      >
+        START
+      </button>
+      <ul
+        className="others"
+      />
+    </div>
+  </div>
+</div>
+`;

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import './Lobby.css';
 import { EnterNameForm } from '../EnterNameForm';
 import { CreateRoomForm } from '../CreateRoomForm';
-import { LobbyPeople } from '../LobbyPeople';
+import { People } from '../People';
 
 const joinRoom = (socket, id, myName) => () => {
   window.location.hash = `#${id}[${myName}]`;
@@ -58,7 +58,7 @@ export const LobbyInner = ({ myName, people, rooms, socket }) => (
         )}
       </div>
       {myName ? <CreateRoomForm /> : null}
-      {myName && Object.values(people).length ? <LobbyPeople /> : null}
+      {myName && Object.values(people).length ? <People /> : null}
     </div>
   </div>
 );

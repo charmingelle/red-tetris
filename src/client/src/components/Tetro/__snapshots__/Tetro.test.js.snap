@@ -1,0 +1,107 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Tetro fully visible 1`] = `
+Array [
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#c00",
+        "borderBottom": "5px solid #980000",
+        "borderLeft": "5px solid #f00",
+        "borderRight": "5px solid #980000",
+        "borderTop": "5px solid  #f00",
+        "height": "40px",
+        "left": "160px",
+        "top": "120px",
+        "width": "40px",
+      }
+    }
+  />,
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#c00",
+        "borderBottom": "5px solid #980000",
+        "borderLeft": "5px solid #f00",
+        "borderRight": "5px solid #980000",
+        "borderTop": "5px solid  #f00",
+        "height": "40px",
+        "left": "200px",
+        "top": "120px",
+        "width": "40px",
+      }
+    }
+  />,
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#c00",
+        "borderBottom": "5px solid #980000",
+        "borderLeft": "5px solid #f00",
+        "borderRight": "5px solid #980000",
+        "borderTop": "5px solid  #f00",
+        "height": "40px",
+        "left": "240px",
+        "top": "120px",
+        "width": "40px",
+      }
+    }
+  />,
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#c00",
+        "borderBottom": "5px solid #980000",
+        "borderLeft": "5px solid #f00",
+        "borderRight": "5px solid #980000",
+        "borderTop": "5px solid  #f00",
+        "height": "40px",
+        "left": "240px",
+        "top": "160px",
+        "width": "40px",
+      }
+    }
+  />,
+]
+`;
+
+exports[`Tetro with only bottom visible 1`] = `
+Array [
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#c00",
+        "borderBottom": "5px solid #980000",
+        "borderLeft": "5px solid #f00",
+        "borderRight": "5px solid #980000",
+        "borderTop": "5px solid  #f00",
+        "height": "40px",
+        "left": "200px",
+        "top": "0px",
+        "width": "40px",
+      }
+    }
+  />,
+  <div
+    className="square"
+    style={
+      Object {
+        "backgroundColor": "#c00",
+        "borderBottom": "5px solid #980000",
+        "borderLeft": "5px solid #f00",
+        "borderRight": "5px solid #980000",
+        "borderTop": "5px solid  #f00",
+        "height": "40px",
+        "left": "240px",
+        "top": "0px",
+        "width": "40px",
+      }
+    }
+  />,
+]
+`;

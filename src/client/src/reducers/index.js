@@ -10,7 +10,7 @@ import {
   MOVE_TETRO_DOWN,
 } from '../constants';
 import socketIOClient from 'socket.io-client';
-import { store } from '../index';
+import { store } from '../store';
 import {
   updatePeople,
   updateRooms,
@@ -57,7 +57,7 @@ const initialState = {
 
 const getMyPile = state => state.myRoom.players[state.myId].pile;
 
-export const allReducers = (state = initialState, { type, payload }) => {
+export const commonReducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case UPDATE_MY_ID: {
       return { ...state, myId: payload };

@@ -19,7 +19,7 @@ import {
   HEIGHT_IN_SQUARES,
 } from '../../constants';
 import { Pile } from '../Pile';
-import { store } from '../../index';
+import { store } from '../../store';
 import { Others } from '../Others';
 import { Penalty } from '../Penalty';
 

@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Two people, Anna's screen 1`] = `
+<div
+  className="lobby-people"
+>
+  <div
+    className="lobby-people-label"
+  >
+    Players
+  </div>
+  <div
+    className="lobby-people-list"
+  >
+    <div
+      className="lobby-person-name"
+      style={
+        Object {
+          "color": "#f9f9f9",
+        }
+      }
+    >
+      Olya - 3
+    </div>
+    <div
+      className="lobby-person-name"
+      style={
+        Object {
+          "color": "#c00",
+        }
+      }
+    >
+      Anna - 0
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Two people, Olya's screen 1`] = `
+<div
+  className="lobby-people"
+>
+  <div
+    className="lobby-people-label"
+  >
+    Players
+  </div>
+  <div
+    className="lobby-people-list"
+  >
+    <div
+      className="lobby-person-name"
+      style={
+        Object {
+          "color": "#c00",
+        }
+      }
+    >
+      Olya - 3
+    </div>
+    <div
+      className="lobby-person-name"
+      style={
+        Object {
+          "color": "#f9f9f9",
+        }
+      }
+    >
+      Anna - 0
+    </div>
+  </div>
+</div>
+`;

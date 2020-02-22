@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Square 1`] = `
+<div
+  className="square"
+  style={
+    Object {
+      "backgroundColor": "#c00",
+      "borderBottom": "5px solid #980000",
+      "borderLeft": "5px solid #f00",
+      "borderRight": "5px solid #980000",
+      "borderTop": "5px solid  #f00",
+      "height": "40px",
+      "left": "120px",
+      "top": "160px",
+      "width": "40px",
+    }
+  }
+/>
+`;
