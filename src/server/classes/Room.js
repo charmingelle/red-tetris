@@ -32,9 +32,11 @@ module.exports = class Room {
 
   increasePlayerScore(playerId, points) {
     this.players[playerId].increaseScore(points);
-    Object.values(this.players)
-      .filter(({ id }) => id !== playerId)
-      .forEach(player => player.receivePenalty(points));
+    if (points >= 2) {
+      Object.values(this.players)
+        .filter(({ id }) => id !== playerId)
+        .forEach(player => player.receivePenalty(points - 1));
+    }
     this.send();
   }
 

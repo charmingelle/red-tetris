@@ -66,7 +66,7 @@ export const commonReducer = (state = initialState, { type, payload }) => {
       return {
         ...state,
         people: payload,
-        myName: payload[state.myId].name,
+        myName: payload[state.myId] ? payload[state.myId].name : state.myName,
       };
     }
     case UPDATE_ROOMS: {
