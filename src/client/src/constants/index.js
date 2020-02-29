@@ -10,6 +10,7 @@ export const UPDATE_ROOMS = 'UPDATE_ROOMS';
 export const UPDATE_ROOM = 'UPDATE_ROOM';
 export const UPDATE_TETRO = 'UPDATE_TETRO';
 export const UPDATE_URL_ERROR = 'UPDATE_URL_ERROR';
+export const RESET_STORE = 'RESET_STORE';
 
 export const MOVE_TETRO = 'MOVE_TETRO';
 export const DROP_TETRO = 'DROP_TETRO';

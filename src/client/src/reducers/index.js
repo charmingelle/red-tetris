@@ -9,6 +9,7 @@ import {
   ROTATE_TETR0,
   MOVE_TETRO_DOWN,
   UPDATE_URL_ERROR,
+  RESET_STORE,
 } from '../constants';
 import socketIOClient from 'socket.io-client';
 import { store } from '../store';
@@ -19,6 +20,7 @@ import {
   updateMyId,
   updateTetro,
   updateUrlError,
+  resetStore,
 } from '../actions';
 import { getRoomIdAndPlayerName } from '../utils/common';
 import {
@@ -48,6 +50,8 @@ io.on('update-room', ({ room }) => store.dispatch(updateRoom(room)));
 io.on('update-tetro', ({ tetro }) => store.dispatch(updateTetro(tetro)));
 
 io.on('update-url-error', () => store.dispatch(updateUrlError(true)));
+
+io.on('reset-store', ({ id }) => store.dispatch(resetStore(id)));
 
 const initialState = {
   socket: io,
@@ -166,6 +170,9 @@ export const commonReducer = (state = initialState, { type, payload }) => {
         return { ...state, urlError: true };
       }
       return { ...state, urlError: false };
+    }
+    case RESET_STORE: {
+      return { ...initialState, myId: payload };
     }
     default: {
       return state;

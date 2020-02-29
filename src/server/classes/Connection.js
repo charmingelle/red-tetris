@@ -41,28 +41,48 @@ module.exports = class Connection {
         this.sendPeopleToAll();
       });
       socket.on('create-room', ({ roomId }) => {
+        if (this.isUnknownPerson(socket)) {
+          return this.emitResetStoreEvent(socket);
+        }
         this.createRoom(socket, roomId);
         this.sendRoomsToAll();
       });
       socket.on('join-room', ({ roomId }) => {
+        if (this.isUnknownPerson(socket)) {
+          return this.emitResetStoreEvent(socket);
+        }
         this.joinRoom(socket, roomId);
         this.sendRoomsToAll();
       });
-      this.sendRoomsToAll();
       socket.on('start-game', ({ roomId }) => {
+        if (this.isUnknownPerson(socket)) {
+          return this.emitResetStoreEvent(socket);
+        }
         this.rooms[roomId].startGame();
         this.sendRoomsToAll();
       });
-      socket.on('get-tetro', ({ roomId, playerId }) =>
-        this.rooms[roomId].getPlayerTetro(playerId),
-      );
-      socket.on('set-pile', ({ roomId, playerId, pile }) =>
-        this.rooms[roomId].setPlayerPile(playerId, pile),
-      );
-      socket.on('increase-score', ({ roomId, playerId, points }) =>
-        this.rooms[roomId].increasePlayerScore(playerId, points),
-      );
+      socket.on('get-tetro', ({ roomId, playerId }) => {
+        if (this.isUnknownPerson(socket)) {
+          return this.emitResetStoreEvent(socket);
+        }
+        this.rooms[roomId].getPlayerTetro(playerId);
+      });
+      socket.on('set-pile', ({ roomId, playerId, pile }) => {
+        if (this.isUnknownPerson(socket)) {
+          return this.emitResetStoreEvent(socket);
+        }
+        this.rooms[roomId].setPlayerPile(playerId, pile);
+      });
+      socket.on('increase-score', ({ roomId, playerId, points }) => {
+        if (this.isUnknownPerson(socket)) {
+          return this.emitResetStoreEvent(socket);
+        }
+        this.rooms[roomId].increasePlayerScore(playerId, points);
+      });
       socket.on('finish-game', ({ roomId, playerId }) => {
+        if (this.isUnknownPerson(socket)) {
+          return this.emitResetStoreEvent(socket);
+        }
         this.rooms[roomId].finishPlayerGame(playerId);
         this.sendRoomsToAll();
       });
@@ -71,6 +91,14 @@ module.exports = class Connection {
         this.sendPeopleToAll();
       });
     });
+  }
+
+  isUnknownPerson(socket) {
+    return this.people[socket.id] === undefined;
+  }
+
+  emitResetStoreEvent(socket) {
+    return this.io.to(socket.id).emit('reset-store', { id: socket.id });
   }
 
   createRoom(socket, roomId) {

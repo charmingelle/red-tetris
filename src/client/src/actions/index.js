@@ -9,6 +9,7 @@ import {
   ROTATE_TETR0,
   MOVE_TETRO_DOWN,
   UPDATE_URL_ERROR,
+  RESET_STORE,
 } from '../constants';
 
 export const updateMyId = myId => ({
@@ -53,7 +54,9 @@ export const moveTetroDown = () => ({
   type: MOVE_TETRO_DOWN,
 });
 
-export const updateUrlError = payload => ({
+export const updateUrlError = urlError => ({
   type: UPDATE_URL_ERROR,
-  payload,
+  payload: urlError,
 });
+
+export const resetStore = id => ({ type: RESET_STORE, payload: id });
