@@ -10,6 +10,7 @@ exports[`CreateRoomForm 1`] = `
     Create own room
   </div>
   <input
+    autoFocus={true}
     className="create-room-input"
     maxLength="15"
     onChange={[Function]}

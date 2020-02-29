@@ -10,6 +10,12 @@
   color: #f9f9f9;
 }
 
+.enter-name-error {
+  margin-bottom: 10px;
+  font-size: 30px;
+  color: #c00;
+}
+
 .enter-name-input {
   height: 45px;
   margin-bottom: 10px;

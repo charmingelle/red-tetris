@@ -30,7 +30,7 @@
 .game-details-container {
   width: 30%;
   height: 100vh;
-  overflow: scroll;
+  overflow-y: auto;
   background-color: #333;
 }
 

@@ -32,6 +32,7 @@ exports[`Empty lobby 1`] = `
           What's your name?
         </div>
         <input
+          autoFocus={true}
           className="enter-name-input"
           maxLength="15"
           onChange={[Function]}
@@ -90,6 +91,7 @@ exports[`Lobby with one player 1`] = `
         Create own room
       </div>
       <input
+        autoFocus={true}
         className="create-room-input"
         maxLength="15"
         onChange={[Function]}
@@ -170,6 +172,7 @@ exports[`Lobby with two players 1`] = `
         Create own room
       </div>
       <input
+        autoFocus={true}
         className="create-room-input"
         maxLength="15"
         onChange={[Function]}
@@ -274,6 +277,7 @@ exports[`Lobby with two players and one roon ready for joining 1`] = `
         Create own room
       </div>
       <input
+        autoFocus={true}
         className="create-room-input"
         maxLength="15"
         onChange={[Function]}
@@ -377,6 +381,7 @@ exports[`Lobby with two players and one roon with game on 1`] = `
         Create own room
       </div>
       <input
+        autoFocus={true}
         className="create-room-input"
         maxLength="15"
         onChange={[Function]}
