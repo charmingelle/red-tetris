@@ -35,7 +35,7 @@ const EnterNameFormInner = ({ socket }) => {
       <div className="enter-name-label">What's your name?</div>
       {nameError && (
         <div className="enter-name-error">
-          Althabet letters, digits, -, _ are allowed. Maximum length is 15
+          Alphabet letters, digits, -, _ are allowed. Maximum length is 15
           symbols.
         </div>
       )}

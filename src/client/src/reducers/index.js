@@ -8,6 +8,7 @@ import {
   DROP_TETRO,
   ROTATE_TETR0,
   MOVE_TETRO_DOWN,
+  UPDATE_URL_ERROR,
 } from '../constants';
 import socketIOClient from 'socket.io-client';
 import { store } from '../store';
@@ -17,6 +18,7 @@ import {
   updateRoom,
   updateMyId,
   updateTetro,
+  updateUrlError,
 } from '../actions';
 import { getRoomIdAndPlayerName } from '../utils/common';
 import {
@@ -45,6 +47,8 @@ io.on('update-room', ({ room }) => store.dispatch(updateRoom(room)));
 
 io.on('update-tetro', ({ tetro }) => store.dispatch(updateTetro(tetro)));
 
+io.on('update-url-error', () => store.dispatch(updateUrlError(true)));
+
 const initialState = {
   socket: io,
   myId: null,
@@ -53,6 +57,7 @@ const initialState = {
   people: {},
   rooms: {},
   tetro: null,
+  urlError: false,
 };
 
 const getMyPile = state => state.myRoom.players[state.myId].pile;
@@ -154,6 +159,13 @@ export const commonReducer = (state = initialState, { type, payload }) => {
         ...state,
         tetro: { ...tetro, row: newRow },
       };
+    }
+    case UPDATE_URL_ERROR: {
+      if (payload) {
+        window.setTimeout(() => store.dispatch(updateUrlError(false)), 7000);
+        return { ...state, urlError: true };
+      }
+      return { ...state, urlError: false };
     }
     default: {
       return state;

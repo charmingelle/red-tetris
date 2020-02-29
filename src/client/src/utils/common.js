@@ -8,8 +8,11 @@ const isHashValid = hash =>
   hash && hash[hash.length - 1] === ']' && hash.split('[').length === 2;
 
 export const getRoomIdAndPlayerName = hash => {
-  if (!isHashValid(hash)) {
+  if (!hash) {
     return null;
+  }
+  if (!isHashValid(hash)) {
+    return { error: true };
   }
   const cutHash = hash.substring(1, hash.length - 1);
   const roomId = cutHash.split('[')[0];
@@ -17,7 +20,7 @@ export const getRoomIdAndPlayerName = hash => {
 
   return isNameValid(roomId) && isNameValid(playerName)
     ? { roomId, playerName }
-    : null;
+    : { error: true };
 };
 
 export const transposeSquareMatrix = matrix => {

@@ -17,35 +17,25 @@ describe('Utils', () => {
       roomId: 'room1',
       playerName: 'player1',
     });
-    expect(getRoomIdAndPlayerName('#room1player1')).toEqual(null);
-    expect(getRoomIdAndPlayerName('#room1[player1')).toEqual(null);
-    expect(getRoomIdAndPlayerName('#room1player1]')).toEqual(null);
-    expect(getRoomIdAndPlayerName('#room+1[player+1]')).toEqual(null);
-    expect(getRoomIdAndPlayerName('#')).toEqual(null);
+    expect(getRoomIdAndPlayerName('#room1player1')).toEqual({ error: true });
+    expect(getRoomIdAndPlayerName('#room1[player1')).toEqual({ error: true });
+    expect(getRoomIdAndPlayerName('#room1player1]')).toEqual({ error: true });
+    expect(getRoomIdAndPlayerName('#room+1[player+1]')).toEqual({
+      error: true,
+    });
+    expect(getRoomIdAndPlayerName('#')).toEqual({ error: true });
+    expect(getRoomIdAndPlayerName('')).toEqual(null);
   });
 
   test('transposeSquareMatrix', () => {
-    const matrix = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-    ];
+    const matrix = [[0, 1, 2], [3, 4, 5], [6, 7, 8]];
 
     transposeSquareMatrix(matrix);
-    expect(matrix).toEqual([
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-    ]);
+    expect(matrix).toEqual([[0, 3, 6], [1, 4, 7], [2, 5, 8]]);
   });
 
   test('reverseSquareMatrixRows', () => {
-    const matrix = [
-      [0, 0, 0, 0],
-      [1, 1, 1, 1],
-      [2, 2, 2, 2],
-      [3, 3, 3, 3],
-    ];
+    const matrix = [[0, 0, 0, 0], [1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3]];
 
     reverseSquareMatrixRows(matrix);
     expect(matrix).toEqual([

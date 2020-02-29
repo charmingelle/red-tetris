@@ -21,7 +21,7 @@ module.exports = class Connection {
     io.on('connection', socket => {
       this.sendMyIdToMe(socket);
 
-      const { roomId, playerName } = socket.request._query;
+      const { roomId, playerName, error } = socket.request._query;
 
       if (roomId && playerName) {
         this.people[socket.id] = { name: playerName, score: 0 };
@@ -31,6 +31,9 @@ module.exports = class Connection {
           this.sendRoomsToAll();
         }
         this.joinRoom(socket, roomId);
+      }
+      if (error) {
+        this.sendUrlErrorToMe(socket);
       }
 
       socket.on('set-name', ({ name }) => {
@@ -88,6 +91,10 @@ module.exports = class Connection {
       socket.join(roomId);
       room.send();
     }
+  }
+
+  sendUrlErrorToMe(socket) {
+    this.io.to(socket.id).emit('update-url-error');
   }
 
   sendMyIdToMe(socket) {

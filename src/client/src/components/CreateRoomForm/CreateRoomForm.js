@@ -43,7 +43,7 @@ const CreateRoomFormInner = ({ socket }) => {
       <div className="create-room-label">Create own room</div>
       {roomNameError && (
         <div className="enter-room-name-error">
-          Althabet letters, digits, -, _ are allowed. Maximum length is 15
+          Alphabet letters, digits, -, _ are allowed. Maximum length is 15
           symbols.
         </div>
       )}

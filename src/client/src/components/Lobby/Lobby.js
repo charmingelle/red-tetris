@@ -44,9 +44,20 @@ const RoomListBoard = ({ myName, rooms, socket }) => (
   </div>
 );
 
-export const LobbyInner = ({ myName, people, rooms, socket }) => (
+export const LobbyInner = ({ myName, people, rooms, socket, urlError }) => (
   <div className="lobby">
     <div className="lobby-left">
+      {urlError && (
+        <span className="url-error">
+          http://localhost:5000/#room_name[player_name]
+          <br />
+          for room joining.
+          <br /> Use alphabet letters, digits, -, _
+          <br />
+          for room amd player name.
+          <br /> Maximum length is 15 charaters.
+        </span>
+      )}
       <RoomListBoard myName={myName} rooms={rooms} socket={socket} />
     </div>
     <div className="lobby-right">
@@ -63,11 +74,12 @@ export const LobbyInner = ({ myName, people, rooms, socket }) => (
   </div>
 );
 
-const mapStateToProps = ({ myName, people, rooms, socket }) => ({
+const mapStateToProps = ({ myName, people, rooms, socket, urlError }) => ({
   myName,
   people,
   rooms,
   socket,
+  urlError,
 });
 
 export const Lobby = connect(mapStateToProps)(LobbyInner);
